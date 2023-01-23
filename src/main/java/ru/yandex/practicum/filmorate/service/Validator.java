@@ -16,7 +16,7 @@ public class Validator {
             throw new ValidationException("Максимальная длина описания фильма — 200 символов.");
         } else if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
             throw new ValidationException("Дата релиза фильма не может быть раньше 28 декабря 1895 года.");
-        } else if (film.getDuration().isNegative() || film.getDuration().isZero()) {
+        } else if (film.getDuration() <= 0) {
             throw new ValidationException("Продолжительность фильма должна быть положительной.");
         }
     }
