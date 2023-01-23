@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @RestController
+@RequestMapping("/films")
 public class FilmController {
 
     int countFilms = 0;
@@ -21,7 +22,7 @@ public class FilmController {
     private final HashMap<Integer, Film> filmsDatabase = new HashMap<>();
     private final static Logger log = LoggerFactory.getLogger(FilmController.class);
 
-    @PostMapping("/film")
+    @PostMapping
     public Film addFilm(@RequestBody Film film) {
         if (filmsDatabase.containsKey(film.getId())) {
             var e = new FilmAlreadyExistException("Не возможно добавить фильм. Фильм с таким id уже существует.");
@@ -31,11 +32,7 @@ public class FilmController {
             try {
                 validator.validateFilms(film);
                 countFilms++;
-                var addedFilm = new Film(countFilms);
-                addedFilm.setName(film.getName());
-                addedFilm.setDescription(film.getDescription());
-                addedFilm.setReleaseDate(film.getReleaseDate());
-                addedFilm.setDuration(film.getDuration());
+                var addedFilm = new Film(countFilms, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration());
 
                 filmsDatabase.put(countFilms, addedFilm);
                 log.debug("Добавлен фильм: {}.", addedFilm);
@@ -47,7 +44,7 @@ public class FilmController {
         }
     }
 
-    @PutMapping("/film")
+    @PutMapping
     public Film updFilm(@RequestBody Film film) {
         if (filmsDatabase.containsKey(film.getId())) {
             try {
@@ -66,7 +63,7 @@ public class FilmController {
         }
     }
 
-    @GetMapping("/films")
+    @GetMapping
     public List<Film> getFilms() {
         var getAllFilms = new ArrayList<>(filmsDatabase.values());
         var size = getAllFilms.size();

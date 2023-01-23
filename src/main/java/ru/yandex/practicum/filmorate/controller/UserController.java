@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @RestController
+@RequestMapping("/users")
 public class UserController {
 
     int countUsers = 0;
@@ -21,7 +22,7 @@ public class UserController {
     private final HashMap<Integer, User> userBase = new HashMap<>();
     private final static Logger log = LoggerFactory.getLogger(UserController.class);
 
-    @PostMapping("/user")
+    @PostMapping
     public User addUser(@RequestBody User user) {
         if (userBase.containsKey(user.getId())) {
             var e = new UserAlreadyExistException("Не возможно добавить пользователя. Пользователь c таким id" +
@@ -32,15 +33,7 @@ public class UserController {
             try {
                 validator.validateUser(user);
                 countUsers++;
-                var addedUser = new User(countUsers);
-                addedUser.setEmail(user.getEmail());
-                addedUser.setLogin(user.getLogin());
-                if (!user.getName().isEmpty()) {
-                    addedUser.setName(user.getName());
-                } else {
-                    addedUser.setName(user.getLogin());
-                }
-                addedUser.setBirthday(user.getBirthday());
+                var addedUser = new User(countUsers, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday());
 
                 userBase.put(countUsers, addedUser);
                 log.debug("Пользователь добавлен: {}.", addedUser);
@@ -52,12 +45,13 @@ public class UserController {
         }
     }
 
-    @PutMapping("/user")
+    @PutMapping
     public User updUser(@RequestBody User user) {
         if (userBase.containsKey(user.getId())) {
             try {
                 validator.validateUser(user);
                 userBase.put(user.getId(), user);
+
                 log.debug("Пользователь обновлен: {}.", user);
                 return user;
             } catch (ValidationException e) {
@@ -72,7 +66,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/users")
+    @GetMapping
     public List<User> getUsers() {
         var getAllUsers = new ArrayList<>(userBase.values());
         var size = getAllUsers.size();
