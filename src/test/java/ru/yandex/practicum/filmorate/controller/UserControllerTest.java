@@ -12,7 +12,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UserControllerTest {
 
     private UserController userController;
-
     @BeforeEach
     public void startController() {
         userController = new UserController();
