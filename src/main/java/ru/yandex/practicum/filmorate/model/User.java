@@ -1,8 +1,9 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor (force = true)
 public class User {
     private final int id;
     @Email
@@ -25,8 +27,7 @@ public class User {
     public String getName() {
         if (name == null || name.isEmpty()) {
             return login;
-        }
-        else {
+        } else {
             return name;
         }
     }
