@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class FilmControllerTest {
 
-    FilmController filmController;
+    private FilmController filmController;
 
     @BeforeEach
     public void startController() {
@@ -75,7 +75,13 @@ public class FilmControllerTest {
         film1.setDescription("описание1");
         film1.setReleaseDate(LocalDate.of(2023, 1, 1));
         film1.setDuration(91);
-        var film0 = new Film(10);
+
+        var film0 = new Film(0);
+        film0.setName("фильм0");
+        film0.setDescription("описание0");
+        film0.setReleaseDate(LocalDate.of(2023, 1, 1));
+        film0.setDuration(91);
+
         var film1upd1 = new Film(1);
         film1upd1.setName("");
         film1upd1.setDescription("описание1 обновлено1");

@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class UserControllerTest {
 
-    UserController userController;
+    private UserController userController;
 
     @BeforeEach
     public void startController() {
@@ -26,6 +26,10 @@ public class UserControllerTest {
         user1.setName("username1");
         user1.setBirthday(LocalDate.of(1989, 4, 20));
         var user0 = new User(1);
+        user0.setEmail("user0@user.com");
+        user0.setLogin("login0");
+        user0.setName("username0");
+        user0.setBirthday(LocalDate.of(1989, 4, 20));
         var user2 = new User(2);
         user2.setEmail("user2.com");
         user2.setLogin("login2");
@@ -72,6 +76,10 @@ public class UserControllerTest {
         user1.setName("username1");
         user1.setBirthday(LocalDate.of(1989, 4, 20));
         var user0 = new User(10);
+        user0.setEmail("user0@user.com");
+        user0.setLogin("login0");
+        user0.setName("username0");
+        user0.setBirthday(LocalDate.of(1989, 4, 20));
         var user1upd1 = new User(1);
         user1upd1.setEmail("");
         user1upd1.setLogin("login1Upd1");
