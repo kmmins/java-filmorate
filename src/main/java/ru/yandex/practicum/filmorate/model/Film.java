@@ -17,13 +17,12 @@ import java.time.LocalDate;
 @NoArgsConstructor(force = true)
 public class Film {
     private final int id;
-    @NotBlank
+    @NotBlank(message = "не должно быть пустым")
     private String name;
-    @NotBlank
-    @Size(max = 200)
+    @NotBlank(message = "не должно быть пустым")
+    @Size(max = 200, message = "размер должен находиться в диапазоне от 0 до 200")
     private String description;
-    @NotNull
     private LocalDate releaseDate;
-    @Positive
+    @Positive(message = "должно быть больше 0")
     private int duration;
 }
