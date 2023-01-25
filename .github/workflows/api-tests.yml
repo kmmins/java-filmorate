@@ -4,7 +4,6 @@ on:
   pull_request:
 
 jobs:
-  runs-on: self-hosted
+  runs-on: windows-latest
   build:
-    runs-on: windows-latest
     uses: yandex-praktikum/java-filmorate/.github/workflows/api-tests.yml@ci
