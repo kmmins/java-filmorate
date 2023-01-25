@@ -54,10 +54,10 @@ public class FilmControllerTest {
                 () -> filmController.addFilm(film4));
         final ValidationException e4 = assertThrows(ValidationException.class, () -> filmController.addFilm(film5));
 
-        assertEquals("addFilm.film.name: must not be blank", e1.getMessage());
-        assertEquals("addFilm.film.description: size must be between 0 and 200", e2.getMessage());
+        assertEquals("addFilm.film.name: не должно быть пустым", e1.getMessage());
+        assertEquals("addFilm.film.description: размер должен находиться в диапазоне от 0 до 200", e2.getMessage());
         assertEquals("Дата релиза фильма не может быть раньше 28 декабря 1895 года.", e3.getMessage());
-        assertEquals("addFilm.film.duration: must be a positive", e4.getMessage());
+        assertEquals("addFilm.film.duration: должно быть больше 0", e4.getMessage());
     }
 
     @Test
@@ -104,10 +104,10 @@ public class FilmControllerTest {
         final ValidationException e4 = assertThrows(ValidationException.class, () -> filmController.updFilm(film2upd4));
 
         assertEquals("Не возможно обновить фильм. Такого фильма не существует.", e0.getMessage());
-        assertEquals("updFilm.film.name: must not be blank", e1.getMessage());
-        assertEquals("updFilm.film.description: size must be between 0 and 200", e2.getMessage());
+        assertEquals("updFilm.film.name: не должно быть пустым", e1.getMessage());
+        assertEquals("updFilm.film.description: размер должен находиться в диапазоне от 0 до 200", e2.getMessage());
         assertEquals("Дата релиза фильма не может быть раньше 28 декабря 1895 года.", e3.getMessage());
-        assertEquals("updFilm.film.duration: must be a positive", e4.getMessage());
+        assertEquals("updFilm.film.duration: должно быть больше 0", e4.getMessage());
     }
 
     @Test
