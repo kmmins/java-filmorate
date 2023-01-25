@@ -53,9 +53,9 @@ public class UserControllerTest {
         var getAll = userController.getUsers();
         var checkUser5 = getAll.get(1);
 
-        assertEquals("addUser.user.email: должно иметь формат адреса электронной почты", e1.getMessage());
-        assertEquals("addUser.user.login: не должно быть пустым", e2.getMessage());
-        assertEquals("addUser.user.birthday: должно содержать прошедшую дату", e3.getMessage());
+        assertEquals("addUser.user.email: must be a well-formed email address", e1.getMessage());
+        assertEquals("addUser.user.login: must not be blank", e2.getMessage());
+        assertEquals("addUser.user.birthday: must contain the past date", e3.getMessage());
         assertEquals("login5", checkUser5.getName(), "Некорректное имя пользователя.");
     }
 
@@ -97,9 +97,9 @@ public class UserControllerTest {
 
         assertEquals("Не возможно обновить данные пользователя. Такого пользователя с таким id не существует.",
                 e0.getMessage());
-        assertEquals("updUser.user.email: должно иметь формат адреса электронной почты", e1.getMessage());
-        assertEquals("updUser.user.login: не должно быть пустым", e2.getMessage());
-        assertEquals("updUser.user.birthday: должно содержать прошедшую дату", e3.getMessage());
+        assertEquals("updUser.user.email: must be a well-formed email address", e1.getMessage());
+        assertEquals("updUser.user.login: must not be blank", e2.getMessage());
+        assertEquals("updUser.user.birthday: must contain the past date", e3.getMessage());
     }
 
     @Test
