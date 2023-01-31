@@ -112,7 +112,7 @@ public class FilmControllerTest {
 
     @Test
     void checkGetFilms() {
-        var getAllBefore = filmController.getFilms();
+        var getAllBefore = filmController.getAllFilms();
         int sizeBefore = getAllBefore.size();
         var film3 = new Film();
         film3.setName("фильм3");
@@ -127,7 +127,7 @@ public class FilmControllerTest {
         film4.setDuration(94);
         var addedFilm4 = filmController.addFilm(film4);
 
-        var getAllAfter = filmController.getFilms();
+        var getAllAfter = filmController.getAllFilms();
         int sizeAfter = getAllAfter.size();
 
         assertNotNull(getAllAfter, "Метод вернул null");

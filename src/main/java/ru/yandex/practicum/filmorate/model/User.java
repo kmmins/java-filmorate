@@ -23,7 +23,6 @@ public class User {
     private String name;
     @Past(message = "должно содержать прошедшую дату")
     private LocalDate birthday;
-
     public String getName() {
         if (name == null || name.isEmpty()) {
             return login;

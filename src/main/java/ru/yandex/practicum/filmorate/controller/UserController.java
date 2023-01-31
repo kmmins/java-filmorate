@@ -1,14 +1,14 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @Slf4j
@@ -17,35 +17,33 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
-    private int countUsers = 0;
-    private final HashMap<Integer, User> userBase = new HashMap<>();
+    @Autowired
+    InMemoryUserStorage inMemoryUserStorage;
 
     @PostMapping
     public User addUser(@Valid @RequestBody User user) {
-        countUsers++;
-        var addedUser = new User(countUsers, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday());
-        userBase.put(countUsers, addedUser);
+        var addedUser = inMemoryUserStorage.addUser(user);
         log.debug("Пользователь добавлен: {}.", addedUser);
         return addedUser;
     }
 
     @PutMapping
     public User updUser(@Valid @RequestBody User user) {
-        if (!userBase.containsKey(user.getId())) {
-            var e = new UserNotFoundException("Не возможно обновить данные пользователя. Такого пользователя с таким id не существует.");
+        if (!inMemoryUserStorage.containsUser(user)) {
+            var e = new UserNotFoundException("Не возможно обновить данные пользователя. Пользователя с таким id не существует в базе.");
             log.error("При обработке запроса PUT /film произошла ошибка: " + e.getMessage());
             throw e;
         }
-        userBase.put(user.getId(), user);
-        log.debug("Пользователь обновлен: {}.", user);
+        var updatedUser = inMemoryUserStorage.updUser(user);
+        log.debug("Пользователь обновлен: {}.", updatedUser);
         return user;
     }
 
     @GetMapping
-    public List<User> getUsers() {
-        var getAllUsers = new ArrayList<>(userBase.values());
-        var size = getAllUsers.size();
+    public List<User> getAllUsers() {
+        var allUsers = inMemoryUserStorage.getAllUsers();
+        var size = allUsers.size();
         log.debug("Обработка запроса GET /users: Всего пользователей: {}.", size);
-        return getAllUsers;
+        return allUsers;
     }
 }
