@@ -17,8 +17,12 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
+    private final InMemoryUserStorage inMemoryUserStorage;
+
     @Autowired
-    InMemoryUserStorage inMemoryUserStorage;
+    public UserController(InMemoryUserStorage inMemoryUserStorage) {
+        this.inMemoryUserStorage = inMemoryUserStorage;
+    }
 
     @PostMapping
     public User addUser(@Valid @RequestBody User user) {

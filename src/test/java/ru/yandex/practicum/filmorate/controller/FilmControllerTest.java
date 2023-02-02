@@ -14,8 +14,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 public class FilmControllerTest {
 
+    private final FilmController filmController;
+
     @Autowired
-    private FilmController filmController;
+    public FilmControllerTest(FilmController filmController) {
+        this.filmController = filmController;
+    }
 
     @Test
     void checkAddFilm() {

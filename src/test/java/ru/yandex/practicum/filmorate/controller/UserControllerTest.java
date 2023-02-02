@@ -14,8 +14,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 public class UserControllerTest {
 
+    private final UserController userController;
+
     @Autowired
-    private UserController userController;
+    public UserControllerTest(UserController userController) {
+        this.userController = userController;
+    }
 
     @Test
     void checkAddUser() {

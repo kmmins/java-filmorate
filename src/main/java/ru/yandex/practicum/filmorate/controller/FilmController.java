@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.CustomValidationException;
 import ru.yandex.practicum.filmorate.service.CustomValidator;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 
 import javax.validation.Valid;
@@ -19,10 +20,14 @@ import java.util.List;
 @RequestMapping("/films")
 public class FilmController {
 
+    private final CustomValidator validator;
+    private final InMemoryFilmStorage inMemoryFilmStorage;
+
     @Autowired
-    private CustomValidator validator;
-    @Autowired
-    private InMemoryFilmStorage inMemoryFilmStorage;
+    public FilmController(CustomValidator validator, InMemoryFilmStorage inMemoryFilmStorage) {
+        this.validator = validator;
+        this.inMemoryFilmStorage = inMemoryFilmStorage;
+    }
 
     @PostMapping
     public Film addFilm(@Valid @RequestBody Film film) {
