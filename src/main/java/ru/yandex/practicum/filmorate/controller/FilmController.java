@@ -23,10 +23,13 @@ public class FilmController {
     private final CustomValidator validator;
     private final InMemoryFilmStorage inMemoryFilmStorage;
 
+    private final FilmService filmService;
+
     @Autowired
-    public FilmController(CustomValidator validator, InMemoryFilmStorage inMemoryFilmStorage) {
+    public FilmController(CustomValidator validator, InMemoryFilmStorage inMemoryFilmStorage, FilmService filmService) {
         this.validator = validator;
         this.inMemoryFilmStorage = inMemoryFilmStorage;
+        this.filmService = filmService;
     }
 
     @PostMapping
@@ -34,7 +37,7 @@ public class FilmController {
         try {
             validator.validateFilms(film);
         } catch (CustomValidationException e) {
-            log.error("При обработке запроса GET /film произошла ошибка валидации: " + e.getMessage());
+            log.error("При обработке запроса GET /films произошла ошибка валидации: " + e.getMessage());
             throw e;
         }
         var addedFilm = inMemoryFilmStorage.addFilm(film);
@@ -47,12 +50,12 @@ public class FilmController {
         try {
             validator.validateFilms(film);
         } catch (CustomValidationException e) {
-            log.error("При обработке запроса PUT /film произошла ошибка валидации: " + e.getMessage());
+            log.error("При обработке запроса PUT /films произошла ошибка валидации: " + e.getMessage());
             throw e;
         }
-        if (!inMemoryFilmStorage.containsFilm(film)) {
+        if (!inMemoryFilmStorage.containsFilm(film.getId())) {
             var e = new FilmNotFoundException("Не возможно обновить фильм. Фильма с таким id не существует в базе.");
-            log.error("При обработке запроса PUT /film произошла ошибка: " + e.getMessage());
+            log.error("При обработке запроса PUT /films произошла ошибка: " + e.getMessage());
             throw e;
         }
         var updatedFilm = inMemoryFilmStorage.updFilm(film);
@@ -66,5 +69,17 @@ public class FilmController {
         var size = allFilms.size();
         log.debug("Обработка запроса GET /films: Текущее количество фильмов: {}", size);
         return allFilms;
+    }
+
+    @GetMapping("/filmId")
+    public Film getFilmById(@PathVariable int filmId) {
+        if (!inMemoryFilmStorage.containsFilm(filmId)) {
+            var e = new FilmNotFoundException("Не удалось получить данные фильма. Фильма с таким id не существует в базе.");
+            log.error("При обработке запроса GET /films/{filmId} произошла ошибка: " + e.getMessage());
+            throw e;
+        }
+        var filmGetById = inMemoryFilmStorage.getFilmById(filmId);
+        log.debug("Получены данные фильма: " + filmGetById);
+        return filmGetById;
     }
 }

@@ -23,11 +23,11 @@ public class InMemoryUserStorage implements UserStorage {
 
     /**
      * Вспомогательный метод
-     * @param user для проверки на содержание в базе
-     * @return булево значение для пользователя на содержание в базе
+     * @param id пользователя для проверки на содержание его в базе
+     * @return булево значение для пользователя на содержание его в базе
      */
-    public boolean containsUser(User user) {
-        return userBase.containsKey(user.getId());
+    public boolean containsUser(int id) {
+        return userBase.containsKey(id);
     }
 
     @Override
@@ -39,5 +39,10 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public List<User> getAllUsers() {
         return new ArrayList<>(userBase.values());
+    }
+
+    @Override
+    public User getUserById(int id) {
+        return userBase.get(id);
     }
 }

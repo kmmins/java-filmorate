@@ -8,7 +8,7 @@ import ru.yandex.practicum.filmorate.exception.SomeIncorrectException;
 import ru.yandex.practicum.filmorate.model.SomeError;
 
 @RestControllerAdvice
-public class SomeExceptionHandler {
+public class AlphaExceptionHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND) // BAD_REQUEST и др. http статусы

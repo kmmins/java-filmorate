@@ -8,9 +8,11 @@ public interface UserStorage {
 
     User addUser(User user);
 
-    boolean containsUser(User user);
+    boolean containsUser(int id);
 
     User updUser(User user);
 
     List<User> getAllUsers();
+
+    User getUserById(int id);
 }

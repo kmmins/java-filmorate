@@ -17,34 +17,49 @@ public class UserService {
         this.userStorage = userStorage;
     }
 
-    public void addFriend(User user1, User user2) {
-        user1.getFriendsSet().add(user2.getId());
-        user2.getFriendsSet().add(user1.getId());
+    public void addFriend(int id1, int id2) {
+        var user1 = userStorage.getUserById(id1);
+        var user2 = userStorage.getUserById(id2);
+
+        user1.getFriendsSet().add(id2);
+        user2.getFriendsSet().add(id1);
     }
 
-    public void delFriend(User user1, User user2) {
-        user1.getFriendsSet().remove(user2.getId());
-        user2.getFriendsSet().remove(user1.getId());
+    public void delFriend(int id1, int id2) {
+        var user1 = userStorage.getUserById(id1);
+        var user2 = userStorage.getUserById(id2);
+
+        user1.getFriendsSet().remove(id2);
+        user2.getFriendsSet().remove(id1);
     }
 
-    public Set<Integer> getFriends(User user) {
-        return user.getFriendsSet();
+    public List<User> getFriends(int id) {
+        List<User> thisUserFriendsLists = new ArrayList<>();
+        var allUsers = userStorage.getAllUsers();
+        var thisUser = userStorage.getUserById(id);
+        var thisUserFriendsSet = thisUser.getFriendsSet();
+
+        for (int i = 0; i < thisUserFriendsSet.size(); i++) {
+            thisUserFriendsLists.add(allUsers.get(i));
+        }
+        return thisUserFriendsLists;
     }
 
-    public List<User> getCollectiveFriends(User user1, User user2) {
-        List<User> collectiveFriendsList = new ArrayList<>();
+    public List<User> getCommonFriends(int id1, int id2) {
+        List<User> commonFriendsList = new ArrayList<>();
+        var user1 = userStorage.getUserById(id1);
+        var user2 = userStorage.getUserById(id2);
         List<User> allUsers = userStorage.getAllUsers();
 
-        Set<Integer> collectiveFriends = new HashSet<>();
+        Set<Integer> commonFriendsSet = new HashSet<>();
         for (int i = 0; i < user1.getFriendsSet().size(); i++) {
             if (user1.getFriendsSet().contains(i) && user2.getFriendsSet().contains(i)) {
-                collectiveFriends.add(i);
+                commonFriendsSet.add(i);
             }
         }
-        for (int i = 0; i < collectiveFriends.size(); i++) {
-            collectiveFriendsList.add(allUsers.get(i));
+        for (int i = 0; i < commonFriendsSet.size(); i++) {
+            commonFriendsList.add(allUsers.get(i));
         }
-
-        return collectiveFriendsList;
+        return commonFriendsList;
     }
 }

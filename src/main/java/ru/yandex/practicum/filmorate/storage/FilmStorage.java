@@ -8,9 +8,11 @@ public interface FilmStorage {
 
     Film addFilm(Film film);
 
-    boolean containsFilm(Film film);
+    boolean containsFilm(int id);
 
     Film updFilm(Film film);
 
     List<Film> getAllFilms();
+
+    Film getFilmById(int id);
 }
