@@ -14,6 +14,19 @@ public class InMemoryUserStorage implements UserStorage {
     private final HashMap<Integer, User> userBase = new HashMap<>();
 
     @Override
+    public boolean containsEmail(User user) {
+        var checkedEmail = user.getEmail();
+        var allUsers = getAllUsers();
+
+        for (User element : allUsers) {
+            if (element.getEmail().equals(checkedEmail)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public User addUser(User user) {
         countUsers++;
         var createdUser = new User(countUsers, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getFriendsSet());
@@ -21,13 +34,9 @@ public class InMemoryUserStorage implements UserStorage {
         return createdUser;
     }
 
-    /**
-     * Вспомогательный метод
-     * @param id пользователя для проверки на содержание его в базе
-     * @return булево значение для пользователя на содержание его в базе
-     */
-    public boolean containsUser(int id) {
-        return userBase.containsKey(id);
+    @Override
+    public boolean notContainsUser(int id) {
+        return !userBase.containsKey(id);
     }
 
     @Override

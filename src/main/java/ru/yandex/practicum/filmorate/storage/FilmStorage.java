@@ -8,7 +8,12 @@ public interface FilmStorage {
 
     Film addFilm(Film film);
 
-    boolean containsFilm(int id);
+    /**
+     * Вспомогательный метод
+     * @param id фильма для проверки на содержание его в базе (памяти)
+     * @return булево значение для фильма на содержание его в базе (памяти)
+     */
+    boolean notContainsFilm(int id);
 
     Film updFilm(Film film);
 

@@ -31,6 +31,5 @@ public class User {
             return name;
         }
     }
-
     private Set<Integer> friendsSet;
 }

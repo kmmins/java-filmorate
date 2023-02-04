@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,13 +21,9 @@ public class InMemoryFilmStorage implements FilmStorage {
         return createdFilm;
     }
 
-    /**
-     * Вспомогательный метод
-     * @param id фильма для проверки на содержание его в базе
-     * @return булево значение для фильма на содержание его в базе
-     */
-    public boolean containsFilm(int id) {
-        return filmsDatabase.containsKey(id);
+    @Override
+    public boolean notContainsFilm(int id) {
+        return !filmsDatabase.containsKey(id);
     }
 
     @Override

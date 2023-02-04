@@ -3,9 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -16,40 +14,35 @@ import static java.lang.Integer.compare;
 public class FilmService {
 
     private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
+    public FilmService(FilmStorage filmStorage) {
         this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
     }
 
-    public void addLike(Film film, User user) {
-        film.getLikesSet().add(user.getId());
+    public void addLike(int id, int userId) {
+        var film = filmStorage.getFilmById(id);
+
+        film.getLikesSet().add(userId);
     }
 
-    public void delLike(Film film, User user) {
-        film.getLikesSet().remove(user.getId());
+    public void delLike(int id, int userId) {
+        var film = filmStorage.getFilmById(id);
+
+        film.getLikesSet().remove(userId);
     }
 
-    public Set<Integer> getLikes(Film film) {
-        return film.getLikesSet();
-    }
-
-    public List<Film> getTop10Films() {
-        List<Film> top10FilmList;
+    public List<Film> getTopCountFilmsOrTop10Films(Optional<Integer> count) {
+        List<Film> topCountFilms;
         List<Film> allFilms = filmStorage.getAllFilms();
-
         Comparator<Film> filmLikesComparator = Comparator.comparing(
                 Film::getLikesSet, (s1, s2) -> compare(s2.size(), s1.size())
         );
 
-        top10FilmList = allFilms.stream()
-                .filter(film -> !film.getLikesSet().isEmpty())
-                .limit(10)
+        topCountFilms = allFilms.stream()
                 .sorted(filmLikesComparator)
+                .limit(count.orElse(10))
                 .collect(Collectors.toList());
-
-        return top10FilmList;
+        return topCountFilms;
     }
 }

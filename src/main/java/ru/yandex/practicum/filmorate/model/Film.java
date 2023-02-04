@@ -25,6 +25,5 @@ public class Film {
     private LocalDate releaseDate;
     @Positive(message = "должно быть больше 0")
     private int duration;
-
     private Set<Integer> likesSet;
 }

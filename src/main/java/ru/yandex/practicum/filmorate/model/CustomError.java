@@ -1,9 +1,9 @@
 package ru.yandex.practicum.filmorate.model;
 
-public class SomeError {
+public class CustomError {
     private final String error;
 
-    public SomeError(String error) {
+    public CustomError(String error) {
         this.error = error;
     }
 

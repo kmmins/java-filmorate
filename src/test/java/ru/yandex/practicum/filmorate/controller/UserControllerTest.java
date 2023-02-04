@@ -99,7 +99,7 @@ public class UserControllerTest {
         final ValidationException e2 = assertThrows(ValidationException.class, () -> userController.updUser(user2upd2));
         final ValidationException e3 = assertThrows(ValidationException.class, () -> userController.updUser(user2upd3));
 
-        assertEquals("Не возможно обновить данные пользователя. Такого пользователя с таким id не существует.",
+        assertEquals("Не возможно обновить данные пользователя. Пользователя с таким id не существует в базе.",
                 e0.getMessage());
         assertEquals("updUser.user.email: должно иметь формат адреса электронной почты", e1.getMessage());
         assertEquals("updUser.user.login: не должно быть пустым", e2.getMessage());

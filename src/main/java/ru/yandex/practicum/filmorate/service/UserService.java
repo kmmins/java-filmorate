@@ -22,7 +22,9 @@ public class UserService {
         var user2 = userStorage.getUserById(id2);
 
         user1.getFriendsSet().add(id2);
+        userStorage.updUser(user1);
         user2.getFriendsSet().add(id1);
+        userStorage.updUser(user2);
     }
 
     public void delFriend(int id1, int id2) {
@@ -30,36 +32,38 @@ public class UserService {
         var user2 = userStorage.getUserById(id2);
 
         user1.getFriendsSet().remove(id2);
+        userStorage.updUser(user1);
         user2.getFriendsSet().remove(id1);
+        userStorage.updUser(user2);
     }
 
     public List<User> getFriends(int id) {
-        List<User> thisUserFriendsLists = new ArrayList<>();
-        var allUsers = userStorage.getAllUsers();
+        List<User> thisUserFriendsList = new ArrayList<>();
         var thisUser = userStorage.getUserById(id);
         var thisUserFriendsSet = thisUser.getFriendsSet();
 
-        for (int i = 0; i < thisUserFriendsSet.size(); i++) {
-            thisUserFriendsLists.add(allUsers.get(i));
+        for (int e : thisUserFriendsSet) {
+            thisUserFriendsList.add(userStorage.getUserById(e));
         }
-        return thisUserFriendsLists;
+
+        return thisUserFriendsList;
     }
 
     public List<User> getCommonFriends(int id1, int id2) {
         List<User> commonFriendsList = new ArrayList<>();
+        Set<Integer> commonFriendsSet = new HashSet<>();
         var user1 = userStorage.getUserById(id1);
         var user2 = userStorage.getUserById(id2);
-        List<User> allUsers = userStorage.getAllUsers();
 
-        Set<Integer> commonFriendsSet = new HashSet<>();
-        for (int i = 0; i < user1.getFriendsSet().size(); i++) {
-            if (user1.getFriendsSet().contains(i) && user2.getFriendsSet().contains(i)) {
-                commonFriendsSet.add(i);
+        for (int e : user1.getFriendsSet()) {
+            if (user1.getFriendsSet().contains(e) && user2.getFriendsSet().contains(e)) {
+                commonFriendsSet.add(e);
             }
         }
-        for (int i = 0; i < commonFriendsSet.size(); i++) {
-            commonFriendsList.add(allUsers.get(i));
-        }
+        commonFriendsSet.forEach(e -> {
+            commonFriendsList.add(userStorage.getUserById(e));
+        });
+
         return commonFriendsList;
     }
 }
