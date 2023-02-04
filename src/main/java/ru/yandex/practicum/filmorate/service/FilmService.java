@@ -20,6 +20,28 @@ public class FilmService {
         this.filmStorage = filmStorage;
     }
 
+    //////////////////////////////////////////////методы filmStorage////////////////////////////////////////////////////
+    public Film addFilm(Film film) {
+        return filmStorage.addFilm(film);
+    }
+
+    public boolean notContainsFilm(int id) {
+        return filmStorage.notContainsFilm(id);
+    }
+
+    public Film updFilm(Film film) {
+        return filmStorage.updFilm(film);
+    }
+
+    public List<Film> getAllFilms() {
+        return filmStorage.getAllFilms();
+    }
+
+    public Film getFilmById(int id) {
+        return filmStorage.getFilmById(id);
+    }
+
+    //////////////////////////////////////////////методы filmStorage////////////////////////////////////////////////////
     public void addLike(int id, int userId) {
         var film = filmStorage.getFilmById(id);
 

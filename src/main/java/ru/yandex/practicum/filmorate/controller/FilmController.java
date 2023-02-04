@@ -6,6 +6,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.CustomValidationException;
+import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.service.CustomValidator;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
@@ -22,13 +23,11 @@ import java.util.Optional;
 public class FilmController {
 
     private final CustomValidator validator;
-    private final InMemoryFilmStorage inMemoryFilmStorage;
     private final FilmService filmService;
 
     @Autowired
-    public FilmController(CustomValidator validator, InMemoryFilmStorage inMemoryFilmStorage, FilmService filmService) {
+    public FilmController(CustomValidator validator, FilmService filmService) {
         this.validator = validator;
-        this.inMemoryFilmStorage = inMemoryFilmStorage;
         this.filmService = filmService;
     }
 
@@ -40,7 +39,7 @@ public class FilmController {
             log.error("При обработке запроса GET /films произошла ошибка валидации: {}.", e.getMessage());
             throw e;
         }
-        var addedFilm = inMemoryFilmStorage.addFilm(film);
+        var addedFilm = filmService.addFilm(film);
         log.debug("Обработка запроса POST /films. Добавлен фильм: {}.", addedFilm);
         return addedFilm;
     }
@@ -53,19 +52,19 @@ public class FilmController {
             log.error("При обработке запроса PUT /films произошла ошибка валидации: {}.", e.getMessage());
             throw e;
         }
-        if (inMemoryFilmStorage.notContainsFilm(film.getId())) {
+        if (filmService.notContainsFilm(film.getId())) {
             var e = new FilmNotFoundException("Не возможно обновить фильм. Фильма с таким id не существует в базе.");
             log.error("При обработке запроса PUT /films произошла ошибка: {}, {}.", e.getMessage(), film.getId());
             throw e;
         }
-        var updatedFilm = inMemoryFilmStorage.updFilm(film);
+        var updatedFilm = filmService.updFilm(film);
         log.debug("Обработка запроса PUT /films. Фильм обновлен: {}.", updatedFilm);
         return updatedFilm;
     }
 
     @GetMapping
     public List<Film> getAllFilms() {
-        var allFilms = inMemoryFilmStorage.getAllFilms();
+        var allFilms = filmService.getAllFilms();
         var size = allFilms.size();
         log.debug("Обработка запроса GET /films. Текущее количество фильмов: {}", size);
         return allFilms;
@@ -73,30 +72,66 @@ public class FilmController {
 
     @GetMapping("/{Id}")
     public Film getFilmById(@PathVariable int id) {
-        if (inMemoryFilmStorage.notContainsFilm(id)) {
+        if (id == 0) {
+            throw new IncorrectParameterException("Параметр id равен 0.");
+        }
+        if (id < 0) {
+            throw new IncorrectParameterException("Параметр id имеет отрицательное значение.");
+        }
+        if (filmService.notContainsFilm(id)) {
             var e = new FilmNotFoundException("Не удалось получить данные фильма. Фильма с таким id не существует в базе.");
             log.error("При обработке запроса GET /films/{filmId} произошла ошибка: {}, {}", e.getMessage(), id);
             throw e;
         }
-        var filmGetById = inMemoryFilmStorage.getFilmById(id);
+        var filmGetById = filmService.getFilmById(id);
         log.debug("Обработка запроса GET /films/{id}. Получены данные фильма: {}.", filmGetById);
         return filmGetById;
     }
 
     @PutMapping("/{id}/like/{userId}")
     public void addLike(@PathVariable int id, @PathVariable int userId) {
+        if (id == 0) {
+            throw new IncorrectParameterException("Параметр id равен 0.");
+        }
+        if (id < 0) {
+            throw new IncorrectParameterException("Параметр id имеет отрицательное значение.");
+        }
+        if (userId == 0) {
+            throw new IncorrectParameterException("Параметр userId равен 0.");
+        }
+        if (userId < 0) {
+            throw new IncorrectParameterException("Параметр userId имеет отрицательное значение.");
+        }
         filmService.addLike(id, userId);
         log.debug("Обработка запроса PUT /films/{id}/like/{userId}. Обновлены данные фильма с id: {}.", id);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public void delLike(@PathVariable int id, @PathVariable int userId) {
+        if (id == 0) {
+            throw new IncorrectParameterException("Параметр id равен 0.");
+        }
+        if (id < 0) {
+            throw new IncorrectParameterException("Параметр id имеет отрицательное значение.");
+        }
+        if (userId == 0) {
+            throw new IncorrectParameterException("Параметр userId равен 0.");
+        }
+        if (userId < 0) {
+            throw new IncorrectParameterException("Параметр userId имеет отрицательное значение.");
+        }
         filmService.delLike(id, userId);
         log.debug("Обработка запроса DELETE /films/{id}/like/{userId}. Обновлены данные фильма с id: {}.", id);
     }
 
     @GetMapping(value = {"/popular?count={count}", "/popular"})
     public List<Film> getTopFilms(@PathVariable Optional<Integer> count) {
+        if (count.isEmpty()) {
+            throw new IncorrectParameterException("Параметр count равен null.");
+        }
+        if (count.get() < 0) {
+            throw new IncorrectParameterException("Параметр count имеет отрицательное значение.");
+        }
         var topFilmList = filmService.getTopCountFilmsOrTop10Films(count);
         log.debug("Обработка запроса GET /films/popular?count={count}.");
         return topFilmList;

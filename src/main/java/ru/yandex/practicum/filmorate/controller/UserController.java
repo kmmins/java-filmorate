@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.exception.UserAlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -20,42 +19,40 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
-    private final InMemoryUserStorage inMemoryUserStorage;
     private final UserService userService;
 
     @Autowired
-    public UserController(InMemoryUserStorage inMemoryUserStorage, UserService userService) {
-        this.inMemoryUserStorage = inMemoryUserStorage;
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
     @PostMapping
     public User addUser(@Valid @RequestBody User user) {
-        if (inMemoryUserStorage.containsEmail(user)) {
+        if (userService.containsEmail(user)) {
             var e = new UserAlreadyExistException("Пользователь с электронной почтой: " + user.getEmail() + " уже существует");
             log.error("При обработке запроса POST /users произошла ошибка: {}.", e.getMessage());
             throw e;
         }
-        var addedUser = inMemoryUserStorage.addUser(user);
+        var addedUser = userService.addUser(user);
         log.debug("Обработка запроса POST /users. Пользователь добавлен: {}.", addedUser);
         return addedUser;
     }
 
     @PutMapping
     public User updUser(@Valid @RequestBody User user) {
-        if (inMemoryUserStorage.notContainsUser(user.getId())) {
+        if (userService.notContainsUser(user.getId())) {
             var e = new UserNotFoundException("Не возможно обновить данные пользователя. Пользователя с таким id не существует в базе.");
             log.error("При обработке запроса PUT /users произошла ошибка: {}, {}.", e.getMessage(), user.getId());
             throw e;
         }
-        var updatedUser = inMemoryUserStorage.updUser(user);
+        var updatedUser = userService.updUser(user);
         log.debug("Обработка запроса PUT /users. Пользователь обновлен: {}.", updatedUser);
         return updatedUser;
     }
 
     @GetMapping
     public List<User> getAllUsers() {
-        var allUsers = inMemoryUserStorage.getAllUsers();
+        var allUsers = userService.getAllUsers();
         var size = allUsers.size();
         log.debug("Обработка запроса GET /users. Всего пользователей: {}.", size);
         return allUsers;
@@ -69,30 +66,60 @@ public class UserController {
         if (id < 0) {
             throw new IncorrectParameterException("Параметр id имеет отрицательное значение.");
         }
-        if (inMemoryUserStorage.notContainsUser(id)) {
+        if (userService.notContainsUser(id)) {
             var e = new UserNotFoundException("Не удалось получить данные пользователя. Пользователя с таким id не существует в базе.");
             log.error("При обработке запроса GET /users/{id} произошла ошибка: {}, {}.", e.getMessage(), id);
             throw e;
         }
-        var userGetById = inMemoryUserStorage.getUserById(id);
+        var userGetById = userService.getUserById(id);
         log.debug("Обработка запроса GET /users/{id}. Получены данные пользователя: {}.", userGetById);
         return userGetById;
     }
 
     @PutMapping("{id}/friends/{friendId}")
     public void weAreFriends(@PathVariable int id, @PathVariable int friendId) {
+        if (id == 0) {
+            throw new IncorrectParameterException("Параметр id равен 0.");
+        }
+        if (id < 0) {
+            throw new IncorrectParameterException("Параметр id имеет отрицательное значение.");
+        }
+        if (friendId == 0) {
+            throw new IncorrectParameterException("Параметр friendId равен 0.");
+        }
+        if (friendId < 0) {
+            throw new IncorrectParameterException("Параметр friendId имеет отрицательное значение.");
+        }
         userService.addFriend(id, friendId);
         log.debug("Обработка запроса PUT /users/{id}/friends/{friendId}. Обновлены данные пользователей с id: {}, {}.", id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
     public void noLongerFriends(@PathVariable int id, @PathVariable int friendId) {
+        if (id == 0) {
+            throw new IncorrectParameterException("Параметр id равен 0.");
+        }
+        if (id < 0) {
+            throw new IncorrectParameterException("Параметр id имеет отрицательное значение.");
+        }
+        if (friendId == 0) {
+            throw new IncorrectParameterException("Параметр friendId равен 0.");
+        }
+        if (friendId < 0) {
+            throw new IncorrectParameterException("Параметр friendId имеет отрицательное значение.");
+        }
         userService.delFriend(id, friendId);
         log.debug("Обработка запроса DELETE /users/{id}/friends/{friendId}. Обновлены данные пользователей с id: {}, {}.", id, friendId);
     }
 
     @GetMapping("/{id}/friends")
     public List<User> getFriends(@PathVariable int id) {
+        if (id == 0) {
+            throw new IncorrectParameterException("Параметр id равен 0.");
+        }
+        if (id < 0) {
+            throw new IncorrectParameterException("Параметр id имеет отрицательное значение.");
+        }
         var userFriendsList = userService.getFriends(id);
         log.debug("Обработка запроса GET /users/{id}/friends. Получены данные пользователя с id: {}.", id);
         return userFriendsList;
@@ -100,6 +127,18 @@ public class UserController {
 
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> getCommonFriends(@PathVariable int id, @PathVariable int otherId) {
+        if (id == 0) {
+            throw new IncorrectParameterException("Параметр id равен 0.");
+        }
+        if (id < 0) {
+            throw new IncorrectParameterException("Параметр id имеет отрицательное значение.");
+        }
+        if (otherId == 0) {
+            throw new IncorrectParameterException("Параметр otherId равен 0.");
+        }
+        if (otherId < 0) {
+            throw new IncorrectParameterException("Параметр otherId имеет отрицательное значение.");
+        }
         var usersCommonFriendsList = userService.getCommonFriends(id, otherId);
         log.debug("Обработка запроса GET /users/{id}/friends/common/{otherId}. Получены данные пользователя с id: {}.", id);
         return usersCommonFriendsList;

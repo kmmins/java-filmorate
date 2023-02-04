@@ -17,6 +17,32 @@ public class UserService {
         this.userStorage = userStorage;
     }
 
+    //////////////////////////////////////////////методы userStorage////////////////////////////////////////////////////
+    public boolean containsEmail(User user) {
+        return userStorage.containsEmail(user);
+    }
+
+    public User addUser(User user) {
+        return userStorage.addUser(user);
+    }
+
+    public boolean notContainsUser(int id){
+        return userStorage.notContainsUser(id);
+    }
+
+    public User updUser(User user){
+        return userStorage.updUser(user);
+    }
+
+    public List<User> getAllUsers(){
+        return userStorage.getAllUsers();
+    }
+
+    public User getUserById(int id){
+        return userStorage.getUserById(id);
+    }
+    //////////////////////////////////////////////методы userStorage////////////////////////////////////////////////////
+
     public void addFriend(int id1, int id2) {
         var user1 = userStorage.getUserById(id1);
         var user2 = userStorage.getUserById(id2);
