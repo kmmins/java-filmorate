@@ -26,19 +26,19 @@ public class UserService {
         return userStorage.addUser(user);
     }
 
-    public boolean notContainsUser(int id){
+    public boolean notContainsUser(int id) {
         return userStorage.notContainsUser(id);
     }
 
-    public User updUser(User user){
+    public User updUser(User user) {
         return userStorage.updUser(user);
     }
 
-    public List<User> getAllUsers(){
+    public List<User> getAllUsers() {
         return userStorage.getAllUsers();
     }
 
-    public User getUserById(int id){
+    public User getUserById(int id) {
         return userStorage.getUserById(id);
     }
     //////////////////////////////////////////////методы userStorage////////////////////////////////////////////////////
@@ -47,10 +47,19 @@ public class UserService {
         var user1 = userStorage.getUserById(id1);
         var user2 = userStorage.getUserById(id2);
 
-        user1.getFriendsSet().add(id2);
-        userStorage.updUser(user1);
-        user2.getFriendsSet().add(id1);
-        userStorage.updUser(user2);
+        if (user1.getFriendsSet() == null) {
+            user1.setFriendsSet(new HashSet<>());
+            user1.getFriendsSet().add(id2);
+        } else {
+            user1.getFriendsSet().add(id2);
+        }
+
+        if (user2.getFriendsSet() == null) {
+            user2.setFriendsSet(new HashSet<>());
+            user2.getFriendsSet().add(id1);
+        } else {
+            user1.getFriendsSet().add(id2);
+        }
     }
 
     public void delFriend(int id1, int id2) {

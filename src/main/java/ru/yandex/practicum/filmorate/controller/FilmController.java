@@ -10,7 +10,6 @@ import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.service.CustomValidator;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -71,11 +70,11 @@ public class FilmController {
     }
 
     @GetMapping("/{Id}")
-    public Film getFilmById(@PathVariable int id) {
-        if (id == 0) {
-            throw new IncorrectParameterException("Параметр id равен 0.");
+    public Film getFilmById(@PathVariable Integer id) {
+        if (id == null) {
+            throw new IncorrectParameterException("Параметр id равен null.");
         }
-        if (id < 0) {
+        if (id <= 0) {
             throw new IncorrectParameterException("Параметр id имеет отрицательное значение.");
         }
         if (filmService.notContainsFilm(id)) {
@@ -89,17 +88,17 @@ public class FilmController {
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public void addLike(@PathVariable int id, @PathVariable int userId) {
-        if (id == 0) {
-            throw new IncorrectParameterException("Параметр id равен 0.");
+    public void addLike(@PathVariable Integer id, @PathVariable Integer userId) {
+        if (id == null) {
+            throw new IncorrectParameterException("Параметр id равен null.");
         }
-        if (id < 0) {
+        if (id <= 0) {
             throw new IncorrectParameterException("Параметр id имеет отрицательное значение.");
         }
-        if (userId == 0) {
-            throw new IncorrectParameterException("Параметр userId равен 0.");
+        if (userId == null) {
+            throw new IncorrectParameterException("Параметр userId равен null.");
         }
-        if (userId < 0) {
+        if (userId <= 0) {
             throw new IncorrectParameterException("Параметр userId имеет отрицательное значение.");
         }
         filmService.addLike(id, userId);
@@ -107,17 +106,17 @@ public class FilmController {
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public void delLike(@PathVariable int id, @PathVariable int userId) {
-        if (id == 0) {
-            throw new IncorrectParameterException("Параметр id равен 0.");
+    public void delLike(@PathVariable Integer id, @PathVariable Integer userId) {
+        if (id == null) {
+            throw new IncorrectParameterException("Параметр id равен null.");
         }
-        if (id < 0) {
+        if (id <= 0) {
             throw new IncorrectParameterException("Параметр id имеет отрицательное значение.");
         }
-        if (userId == 0) {
-            throw new IncorrectParameterException("Параметр userId равен 0.");
+        if (userId == null) {
+            throw new IncorrectParameterException("Параметр userId равен null.");
         }
-        if (userId < 0) {
+        if (userId <= 0) {
             throw new IncorrectParameterException("Параметр userId имеет отрицательное значение.");
         }
         filmService.delLike(id, userId);

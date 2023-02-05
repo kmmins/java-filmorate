@@ -9,12 +9,13 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor (force = true)
+@NoArgsConstructor(force = true)
 public class User {
     private final int id;
     @Email(message = "должно иметь формат адреса электронной почты")
@@ -24,6 +25,8 @@ public class User {
     private String name;
     @Past(message = "должно содержать прошедшую дату")
     private LocalDate birthday;
+    private Set<Integer> friendsSet;
+
     public String getName() {
         if (name == null || name.isEmpty()) {
             return login;
@@ -31,5 +34,4 @@ public class User {
             return name;
         }
     }
-    private Set<Integer> friendsSet;
 }

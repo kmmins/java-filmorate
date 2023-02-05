@@ -59,11 +59,11 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable int id) {
-        if (id == 0) {
-            throw new IncorrectParameterException("Параметр id равен 0.");
+    public User getUserById(@PathVariable Integer id) {
+        if (id == null) {
+            throw new IncorrectParameterException("Параметр id равен null.");
         }
-        if (id < 0) {
+        if (id <= 0) {
             throw new IncorrectParameterException("Параметр id имеет отрицательное значение.");
         }
         if (userService.notContainsUser(id)) {
@@ -77,17 +77,17 @@ public class UserController {
     }
 
     @PutMapping("{id}/friends/{friendId}")
-    public void weAreFriends(@PathVariable int id, @PathVariable int friendId) {
-        if (id == 0) {
-            throw new IncorrectParameterException("Параметр id равен 0.");
+    public void weAreFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
+        if (id == null) {
+            throw new IncorrectParameterException("Параметр id равен null.");
         }
-        if (id < 0) {
+        if (id <= 0) {
             throw new IncorrectParameterException("Параметр id имеет отрицательное значение.");
         }
-        if (friendId == 0) {
-            throw new IncorrectParameterException("Параметр friendId равен 0.");
+        if (friendId == null) {
+            throw new IncorrectParameterException("Параметр friendId равен null.");
         }
-        if (friendId < 0) {
+        if (friendId <= 0) {
             throw new IncorrectParameterException("Параметр friendId имеет отрицательное значение.");
         }
         userService.addFriend(id, friendId);
@@ -95,17 +95,17 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
-    public void noLongerFriends(@PathVariable int id, @PathVariable int friendId) {
-        if (id == 0) {
-            throw new IncorrectParameterException("Параметр id равен 0.");
+    public void noLongerFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
+        if (id == null) {
+            throw new IncorrectParameterException("Параметр id равен null.");
         }
-        if (id < 0) {
+        if (id <= 0) {
             throw new IncorrectParameterException("Параметр id имеет отрицательное значение.");
         }
-        if (friendId == 0) {
-            throw new IncorrectParameterException("Параметр friendId равен 0.");
+        if (friendId == null) {
+            throw new IncorrectParameterException("Параметр friendId равен null.");
         }
-        if (friendId < 0) {
+        if (friendId <= 0) {
             throw new IncorrectParameterException("Параметр friendId имеет отрицательное значение.");
         }
         userService.delFriend(id, friendId);
@@ -113,11 +113,11 @@ public class UserController {
     }
 
     @GetMapping("/{id}/friends")
-    public List<User> getFriends(@PathVariable int id) {
-        if (id == 0) {
-            throw new IncorrectParameterException("Параметр id равен 0.");
+    public List<User> getFriends(@PathVariable Integer id) {
+        if (id == null) {
+            throw new IncorrectParameterException("Параметр id равен null.");
         }
-        if (id < 0) {
+        if (id <= 0) {
             throw new IncorrectParameterException("Параметр id имеет отрицательное значение.");
         }
         var userFriendsList = userService.getFriends(id);
@@ -126,17 +126,17 @@ public class UserController {
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> getCommonFriends(@PathVariable int id, @PathVariable int otherId) {
-        if (id == 0) {
-            throw new IncorrectParameterException("Параметр id равен 0.");
+    public List<User> getCommonFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
+        if (id == null) {
+            throw new IncorrectParameterException("Параметр id равен null.");
         }
-        if (id < 0) {
+        if (id <= 0) {
             throw new IncorrectParameterException("Параметр id имеет отрицательное значение.");
         }
-        if (otherId == 0) {
-            throw new IncorrectParameterException("Параметр otherId равен 0.");
+        if (otherId == null) {
+            throw new IncorrectParameterException("Параметр otherId равен null.");
         }
-        if (otherId < 0) {
+        if (otherId <= 0) {
             throw new IncorrectParameterException("Параметр otherId имеет отрицательное значение.");
         }
         var usersCommonFriendsList = userService.getCommonFriends(id, otherId);
