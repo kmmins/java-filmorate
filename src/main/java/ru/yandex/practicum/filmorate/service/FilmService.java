@@ -45,13 +45,19 @@ public class FilmService {
     public void addLike(int id, int userId) {
         var film = filmStorage.getFilmById(id);
 
+        if (film.getLikesSet() == null) {
+            film.setLikesSet(new HashSet<>());
+        }
+
         film.getLikesSet().add(userId);
+        filmStorage.updFilm(film);
     }
 
     public void delLike(int id, int userId) {
         var film = filmStorage.getFilmById(id);
 
         film.getLikesSet().remove(userId);
+        filmStorage.updFilm(film);
     }
 
     public List<Film> getTopCountFilmsOrTop10Films(Optional<Integer> count) {

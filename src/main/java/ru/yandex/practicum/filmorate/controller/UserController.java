@@ -76,7 +76,7 @@ public class UserController {
         return userGetById;
     }
 
-    @PutMapping("{id}/friends/{friendId}")
+    @PutMapping("/{id}/friends/{friendId}")
     public void weAreFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
         if (id == null) {
             throw new IncorrectParameterException("Параметр id равен null.");

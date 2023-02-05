@@ -49,17 +49,15 @@ public class UserService {
 
         if (user1.getFriendsSet() == null) {
             user1.setFriendsSet(new HashSet<>());
-            user1.getFriendsSet().add(id2);
-        } else {
-            user1.getFriendsSet().add(id2);
         }
-
         if (user2.getFriendsSet() == null) {
             user2.setFriendsSet(new HashSet<>());
-            user2.getFriendsSet().add(id1);
-        } else {
-            user1.getFriendsSet().add(id2);
         }
+
+        user1.getFriendsSet().add(id2);
+        userStorage.updUser(user1);
+        user2.getFriendsSet().add(id1);
+        userStorage.updUser(user2);
     }
 
     public void delFriend(int id1, int id2) {
