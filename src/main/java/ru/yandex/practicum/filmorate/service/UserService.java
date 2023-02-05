@@ -18,9 +18,6 @@ public class UserService {
     }
 
     //////////////////////////////////////////////методы userStorage////////////////////////////////////////////////////
-    public boolean containsEmail(User user) {
-        return userStorage.containsEmail(user);
-    }
 
     public User addUser(User user) {
         return userStorage.addUser(user);
@@ -41,18 +38,12 @@ public class UserService {
     public User getUserById(int id) {
         return userStorage.getUserById(id);
     }
+
     //////////////////////////////////////////////методы userStorage////////////////////////////////////////////////////
 
     public void addFriend(int id1, int id2) {
         var user1 = userStorage.getUserById(id1);
         var user2 = userStorage.getUserById(id2);
-
-        if (user1.getFriendsSet() == null) {
-            user1.setFriendsSet(new HashSet<>());
-        }
-        if (user2.getFriendsSet() == null) {
-            user2.setFriendsSet(new HashSet<>());
-        }
 
         user1.getFriendsSet().add(id2);
         userStorage.updUser(user1);

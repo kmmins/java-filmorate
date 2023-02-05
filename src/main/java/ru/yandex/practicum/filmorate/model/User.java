@@ -34,4 +34,11 @@ public class User {
             return name;
         }
     }
+
+    public Set<Integer> getFriendsSet() {
+        if (friendsSet == null) {
+            friendsSet = new HashSet<>();
+        }
+        return friendsSet;
+    }
 }

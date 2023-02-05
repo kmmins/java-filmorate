@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.UserAlreadyExistException;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.ArrayList;
@@ -28,6 +30,9 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User addUser(User user) {
+        if (containsEmail(user)) {
+            throw new UserAlreadyExistException("Пользователь с электронной почтой: " + user.getEmail() + " уже существует.");
+        }
         countUsers++;
         var createdUser = new User(countUsers, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getFriendsSet());
         userBase.put(countUsers, createdUser);
@@ -41,6 +46,9 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User updUser(User user) {
+        if (notContainsUser(user.getId())) {
+            throw new UserNotFoundException("Не возможно обновить данные пользователя. Не найден пользователь с id: " + user.getId());
+        }
         userBase.put(user.getId(), user);
         return user;
     }
@@ -52,6 +60,10 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User getUserById(int id) {
-        return userBase.get(id);
+        var result = userBase.get(id);
+        if (result == null) {
+            throw new UserNotFoundException("Не найден пользователь с id: " + id);
+        }
+        return result;
     }
 }
