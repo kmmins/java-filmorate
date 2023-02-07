@@ -10,15 +10,14 @@ import java.util.HashMap;
 import java.util.List;
 
 @Component
-public class InMemoryUserStorage implements UserStorage {
+public class InMemoryUserStorage implements AbstractStorage<User> {
 
     private int countUsers = 0;
     private final HashMap<Integer, User> userBase = new HashMap<>();
 
-    @Override
-    public boolean containsEmail(User user) {
+    private boolean containsEmail(User user) {
         var checkedEmail = user.getEmail();
-        var allUsers = getAllUsers();
+        var allUsers = getAll();
 
         for (User element : allUsers) {
             if (element.getEmail().equals(checkedEmail)) {
@@ -28,8 +27,12 @@ public class InMemoryUserStorage implements UserStorage {
         return false;
     }
 
+    private boolean notContainsUser(User user) {
+        return !userBase.containsKey(user.getId());
+    }
+
     @Override
-    public User addUser(User user) {
+    public User add(User user) {
         if (containsEmail(user)) {
             throw new UserAlreadyExistException("Пользователь с электронной почтой: " + user.getEmail() + " уже существует.");
         }
@@ -40,13 +43,8 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public boolean notContainsUser(int id) {
-        return !userBase.containsKey(id);
-    }
-
-    @Override
-    public User updUser(User user) {
-        if (notContainsUser(user.getId())) {
+    public User update(User user) {
+        if (notContainsUser(user)) {
             throw new UserNotFoundException("Не возможно обновить данные пользователя. Не найден пользователь с id: " + user.getId());
         }
         userBase.put(user.getId(), user);
@@ -54,12 +52,12 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public List<User> getAllUsers() {
+    public List<User> getAll() {
         return new ArrayList<>(userBase.values());
     }
 
     @Override
-    public User getUserById(int id) {
+    public User getById(int id) {
         var result = userBase.get(id);
         if (result == null) {
             throw new UserNotFoundException("Не найден пользователь с id: " + id);

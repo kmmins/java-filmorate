@@ -5,7 +5,8 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.AbstractStorage;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -15,53 +16,48 @@ import static java.lang.Integer.compare;
 @Service
 public class FilmService {
 
-    private final FilmStorage filmStorage;
-    private final UserService userService;
+    private final AbstractStorage<Film> filmStorage;
+    private final AbstractStorage<User> userStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserService userService) {
+    public FilmService(AbstractStorage<Film> filmStorage, AbstractStorage<User> userStorage) {
         this.filmStorage = filmStorage;
-        this.userService = userService;
+        this.userStorage = userStorage;
     }
 
-    //////////////////////////////////////////////методы filmStorage////////////////////////////////////////////////////
-
     public Film addFilm(Film film) {
-        return filmStorage.addFilm(film);
+        return filmStorage.add(film);
     }
 
     public Film updFilm(Film film) {
-        return filmStorage.updFilm(film);
+        return filmStorage.update(film);
     }
 
     public List<Film> getAllFilms() {
-        return filmStorage.getAllFilms();
+        return filmStorage.getAll();
     }
 
     public Film getFilmById(int id) {
-        return filmStorage.getFilmById(id);
+        return filmStorage.getById(id);
     }
 
-    //////////////////////////////////////////////методы filmStorage////////////////////////////////////////////////////
-
     public void addLike(int id, int userId) {
-        var film = filmStorage.getFilmById(id);
-
-        if (userService.notContainsUser(userId)) {
+        if (userStorage.getById(userId) == null) {
             throw new UserNotFoundException("Не найден пользователь с id: " + id);
         }
+        var film = filmStorage.getById(id);
+
         film.getLikesSet().add(userId);
-        filmStorage.updFilm(film);
+        filmStorage.update(film);
     }
 
     public void delLike(int id, int userId) {
-        var film = filmStorage.getFilmById(id);
-
-        if (userService.notContainsUser(userId)) {
+        if (userStorage.getById(userId) == null) {
             throw new UserNotFoundException("Не найден пользователь с id: " + id);
         }
+        var film = filmStorage.getById(id);
         film.getLikesSet().remove(userId);
-        filmStorage.updFilm(film);
+        filmStorage.update(film);
     }
 
     public List<Film> getTopCountFilmsOrTop10Films(Integer count) {
@@ -69,7 +65,7 @@ public class FilmService {
             throw new IncorrectParameterException("Параметр count имеет отрицательное значение.");
         }
         List<Film> topCountFilms;
-        List<Film> allFilms = filmStorage.getAllFilms();
+        List<Film> allFilms = filmStorage.getAll();
         Comparator<Film> filmLikesComparator = Comparator.comparing(
                 Film::getLikesSet, (s1, s2) -> compare(s2.size(), s1.size())
         );

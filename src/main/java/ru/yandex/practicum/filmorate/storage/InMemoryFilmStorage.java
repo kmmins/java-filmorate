@@ -9,13 +9,17 @@ import java.util.HashMap;
 import java.util.List;
 
 @Component
-public class InMemoryFilmStorage implements FilmStorage {
+public class InMemoryFilmStorage implements AbstractStorage<Film> {
 
     private int countFilms = 0;
     private final HashMap<Integer, Film> filmsDatabase = new HashMap<>();
 
+    private boolean notContainsFilm(int id) {
+        return !filmsDatabase.containsKey(id);
+    }
+
     @Override
-    public Film addFilm(Film film) {
+    public Film add(Film film) {
         countFilms++;
         var createdFilm = new Film(countFilms, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getLikesSet());
         filmsDatabase.put(countFilms, createdFilm);
@@ -23,12 +27,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public boolean notContainsFilm(int id) {
-        return !filmsDatabase.containsKey(id);
-    }
-
-    @Override
-    public Film updFilm(Film film) {
+    public Film update(Film film) {
         if (notContainsFilm(film.getId())) {
             throw new FilmNotFoundException("Не возможно обновить фильм. Не найден фильм c id: " + film.getId());
         }
@@ -37,12 +36,12 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getAllFilms() {
+    public List<Film> getAll() {
         return new ArrayList<>(filmsDatabase.values());
     }
 
     @Override
-    public Film getFilmById(int id) {
+    public Film getById(int id) {
         var result = filmsDatabase.get(id);
         if (result == null) {
             throw new FilmNotFoundException("Не найден фильм с id: " + id);
