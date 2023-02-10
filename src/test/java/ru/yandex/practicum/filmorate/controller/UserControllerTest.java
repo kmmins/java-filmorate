@@ -14,8 +14,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 public class UserControllerTest {
 
+    private final UserController userController;
+
     @Autowired
-    private UserController userController;
+    public UserControllerTest(UserController userController) {
+        this.userController = userController;
+    }
 
     @Test
     void checkAddUser() {
@@ -50,7 +54,7 @@ public class UserControllerTest {
         final ValidationException e1 = assertThrows(ValidationException.class, () -> userController.addUser(user2));
         final ValidationException e2 = assertThrows(ValidationException.class, () -> userController.addUser(user3));
         final ValidationException e3 = assertThrows(ValidationException.class, () -> userController.addUser(user4));
-        var getAll = userController.getUsers();
+        var getAll = userController.getAllUsers();
         var checkUser5 = getAll.get(1);
 
         assertEquals("addUser.user.email: должно иметь формат адреса электронной почты", e1.getMessage());
@@ -95,7 +99,7 @@ public class UserControllerTest {
         final ValidationException e2 = assertThrows(ValidationException.class, () -> userController.updUser(user2upd2));
         final ValidationException e3 = assertThrows(ValidationException.class, () -> userController.updUser(user2upd3));
 
-        assertEquals("Не возможно обновить данные пользователя. Такого пользователя с таким id не существует.",
+        assertEquals("Не возможно обновить данные пользователя. Не найден пользователь с id: 100500",
                 e0.getMessage());
         assertEquals("updUser.user.email: должно иметь формат адреса электронной почты", e1.getMessage());
         assertEquals("updUser.user.login: не должно быть пустым", e2.getMessage());
@@ -104,7 +108,7 @@ public class UserControllerTest {
 
     @Test
     void checkGetUsers() {
-        var getAllBefore = userController.getUsers();
+        var getAllBefore = userController.getAllUsers();
         var sizeBefore = getAllBefore.size();
         var user3 = new User();
         user3.setEmail("user3@user.com");
@@ -119,7 +123,7 @@ public class UserControllerTest {
         user4.setBirthday(LocalDate.of(1989, 4, 24));
         var addedUser4 = userController.addUser(user4);
 
-        var getAllAfter = userController.getUsers();
+        var getAllAfter = userController.getAllUsers();
         var sizeAfter = getAllAfter.size();
 
         assertNotNull(getAllAfter, "Метод вернул null");

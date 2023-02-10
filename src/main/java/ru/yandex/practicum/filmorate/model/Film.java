@@ -6,10 +6,11 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @RequiredArgsConstructor
@@ -25,4 +26,12 @@ public class Film {
     private LocalDate releaseDate;
     @Positive(message = "должно быть больше 0")
     private int duration;
+    private Set<Integer> likesSet;
+
+    public Set<Integer> getLikesSet() {
+        if (likesSet == null) {
+            likesSet = new HashSet<>();
+        }
+        return likesSet;
+    }
 }

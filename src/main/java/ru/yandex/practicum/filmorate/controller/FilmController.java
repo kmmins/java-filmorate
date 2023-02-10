@@ -4,14 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.CustomValidationException;
+import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.service.CustomValidator;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @Slf4j
@@ -20,23 +19,25 @@ import java.util.List;
 @RequestMapping("/films")
 public class FilmController {
 
-    private int countFilms = 0;
+    private final CustomValidator validator;
+    private final FilmService filmService;
+
     @Autowired
-    private CustomValidator validator;
-    private final HashMap<Integer, Film> filmsDatabase = new HashMap<>();
+    public FilmController(CustomValidator validator, FilmService filmService) {
+        this.validator = validator;
+        this.filmService = filmService;
+    }
 
     @PostMapping
     public Film addFilm(@Valid @RequestBody Film film) {
         try {
             validator.validateFilms(film);
         } catch (CustomValidationException e) {
-            log.error("При обработке запроса GET /film произошла ошибка валидации: " + e.getMessage());
+            log.error("При обработке запроса GET /films произошла ошибка валидации: {}.", e.getMessage());
             throw e;
         }
-        countFilms++;
-        var addedFilm = new Film(countFilms, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration());
-        filmsDatabase.put(countFilms, addedFilm);
-        log.debug("Добавлен фильм: {}.", addedFilm);
+        var addedFilm = filmService.addFilm(film);
+        log.debug("Обработка запроса POST /films. Добавлен фильм: {}.", addedFilm);
         return addedFilm;
     }
 
@@ -45,24 +46,60 @@ public class FilmController {
         try {
             validator.validateFilms(film);
         } catch (CustomValidationException e) {
-            log.error("При обработке запроса PUT /film произошла ошибка валидации: " + e.getMessage());
+            log.error("При обработке запроса PUT /films произошла ошибка валидации: {}.", e.getMessage());
             throw e;
         }
-        if (!filmsDatabase.containsKey(film.getId())) {
-            var e = new FilmNotFoundException("Не возможно обновить фильм. Такого фильма не существует.");
-            log.error("При обработке запроса PUT /film произошла ошибка: " + e.getMessage());
-            throw e;
-        }
-        filmsDatabase.put(film.getId(), film);
-        log.debug("Фильм обновлен: {}.", film);
-        return film;
+        var updatedFilm = filmService.updFilm(film);
+        log.debug("Обработка запроса PUT /films. Фильм обновлен: {}.", updatedFilm);
+        return updatedFilm;
     }
 
     @GetMapping
-    public List<Film> getFilms() {
-        var getAllFilms = new ArrayList<>(filmsDatabase.values());
-        var size = getAllFilms.size();
-        log.debug("Обработка запроса GET /films: Текущее количество фильмов: {}", size);
-        return getAllFilms;
+    public List<Film> getAllFilms() {
+        var allFilms = filmService.getAllFilms();
+        var size = allFilms.size();
+        log.debug("Обработка запроса GET /films. Текущее количество фильмов: {}.", size);
+        return allFilms;
+    }
+
+    @GetMapping("/{id}")
+    public Film getFilmById(@PathVariable Integer id) {
+        if (id == null) {
+            throw new IncorrectParameterException("Параметр id равен null.");
+        }
+        var filmGetById = filmService.getFilmById(id);
+        log.debug("Обработка запроса GET /films/{id}. Получены данные фильма: {}.", filmGetById);
+        return filmGetById;
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public void addLike(@PathVariable Integer id, @PathVariable Integer userId) {
+        if (id == null) {
+            throw new IncorrectParameterException("Параметр id равен null.");
+        }
+        if (userId == null) {
+            throw new IncorrectParameterException("Параметр userId равен null.");
+        }
+        filmService.addLike(id, userId);
+        log.debug("Обработка запроса PUT /films/{id}/like/{userId}. Обновлены данные фильма с id: {}.", id);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void delLike(@PathVariable Integer id, @PathVariable Integer userId) {
+        if (id == null) {
+            throw new IncorrectParameterException("Параметр id равен null.");
+        }
+        if (userId == null) {
+            throw new IncorrectParameterException("Параметр userId равен null.");
+        }
+        filmService.delLike(id, userId);
+        log.debug("Обработка запроса DELETE /films/{id}/like/{userId}. Обновлены данные фильма с id: {}.", id);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getTopFilms(@RequestParam(required = false) Integer count) {
+        var topFilmList = filmService.getTopCountFilmsOrTop10Films(count);
+        log.debug("Обработка запроса GET /films/popular?count={count}. Получены данные популярных фильмов.");
+        return topFilmList;
     }
 }
