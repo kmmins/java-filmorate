@@ -1,7 +1,7 @@
 # java-filmorate
 Repository for another one homework project (filmorate).
 
-ER-diagram generated from mermaid:
+ER-diagram filmorate database (mermaid-tool):
 ```mermaid
 classDiagram
 direction BT
@@ -55,5 +55,4 @@ friends  -->  status : status_id
 friends  -->  user : user_id2
 friends  -->  user : user_id1
 ```
-also see IDEA Ultimate auto-generated schema:
-![schema here](https://github.com/kmmins/java-filmorate/blob/add-friends-likes/assets/ER_filmorate.png)
+IDEA Ultimate auto-generated [schema:] !(https://github.com/kmmins/java-filmorate/blob/add-friends-likes/assets/ER_filmorate.png)
