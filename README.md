@@ -54,3 +54,5 @@ friends  -->  user : user_id2
 friends  -->  user : user_id1
 
 ```
+
+![also see IntelliJ IDEA Ultimate auto-generated schema here](https://github.com/kmmins/java-filmorate/blob/add-friends-likes/assets/ER_filmorate.png)
