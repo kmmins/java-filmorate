@@ -1,7 +1,7 @@
 # java-filmorate
 Repository for another one homework project (filmorate).
 
-ER-diagram filmorate database:
+ER-diagram filmorate database (generated from mermaid):
 ```mermaid
 classDiagram
 direction BT
