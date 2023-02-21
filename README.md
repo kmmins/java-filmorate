@@ -55,6 +55,6 @@ friends  -->  status : status_id
 friends  -->  user : user_id2
 friends  -->  user : user_id1
 ```
-IDEA Ultimate auto-generated:
-`[schema](https://github.com/kmmins/java-filmorate/blob/add-friends-likes/assets/ER_filmorate.png)`
-`[SQL script](https://github.com/kmmins/java-filmorate/blob/add-friends-likes/assets/script.sql)`
+IDEA Ultimate auto-generated [schema](https://github.com/kmmins/java-filmorate/blob/add-friends-likes/assets/ER_filmorate.png) and [SQL script](https://github.com/kmmins/java-filmorate/blob/add-friends-likes/assets/script.sql).
+
+
