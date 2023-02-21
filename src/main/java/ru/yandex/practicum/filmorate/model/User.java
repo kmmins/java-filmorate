@@ -9,6 +9,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,7 +26,8 @@ public class User {
     private String name;
     @Past(message = "должно содержать прошедшую дату")
     private LocalDate birthday;
-    private Set<Integer> friendsSet;
+    // переработать структуру хранения данных о друзьях пользовательей вероятно в hashmap
+    private HashMap<Integer, FriendStatus> friendsMap;
 
     public String getName() {
         if (name == null || name.isEmpty()) {
@@ -35,10 +37,10 @@ public class User {
         }
     }
 
-    public Set<Integer> getFriendsSet() {
-        if (friendsSet == null) {
-            friendsSet = new HashSet<>();
+    public HashMap<Integer, FriendStatus> getFriendsMap() {
+        if (friendsMap == null) {
+            friendsMap = new HashMap<>();
         }
-        return friendsSet;
+        return friendsMap;
     }
 }

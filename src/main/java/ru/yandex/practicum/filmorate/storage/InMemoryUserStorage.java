@@ -37,7 +37,13 @@ public class InMemoryUserStorage implements AbstractStorage<User> {
             throw new UserAlreadyExistException("Пользователь с электронной почтой: " + user.getEmail() + " уже существует.");
         }
         countUsers++;
-        var createdUser = new User(countUsers, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getFriendsSet());
+        var createdUser = new User(
+                countUsers,
+                user.getEmail(),
+                user.getLogin(),
+                user.getName(),
+                user.getBirthday(),
+                user.getFriendsMap());
         userBase.put(countUsers, createdUser);
         return createdUser;
     }

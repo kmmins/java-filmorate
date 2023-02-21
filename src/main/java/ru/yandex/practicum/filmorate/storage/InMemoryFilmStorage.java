@@ -21,7 +21,16 @@ public class InMemoryFilmStorage implements AbstractStorage<Film> {
     @Override
     public Film add(Film film) {
         countFilms++;
-        var createdFilm = new Film(countFilms, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getLikesSet());
+        var createdFilm = new Film(
+                countFilms,
+                film.getName(),
+                film.getDescription(),
+                film.getReleaseDate(),
+                film.getGenre(),
+                film.getRating(),
+                film.getDuration(),
+                film.getLikesSet()
+        );
         filmsDatabase.put(countFilms, createdFilm);
         return createdFilm;
     }
