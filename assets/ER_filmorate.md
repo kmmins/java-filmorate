@@ -1,6 +1,3 @@
-# java-filmorate
-Repository for another one homework project (filmorate) by kmmins.
-```mermaid
 classDiagram
 direction BT
 class film {
@@ -50,7 +47,5 @@ film_genre  -->  genre : genre_id
 films_users_likes  -->  film : film_id
 films_users_likes  -->  user : user_id
 friends  -->  status : status_id
-friends  -->  user : user_id2
-friends  -->  user : user_id1
-
-```
+friends  -->  user : user_id2:user_id
+friends  -->  user : user_id1:user_id
