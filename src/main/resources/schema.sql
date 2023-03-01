@@ -1,87 +1,87 @@
-create table IF NOT EXISTS users
+CREATE TABLE IF NOT EXISTS USERS
 (
-    user_id  integer
-        constraint user_pk
-            primary key,
-    email    varchar(40) not null,
-    login    varchar(40) not null,
-    name     varchar(20),
-    birthday date
-);
+    USER_ID  INTEGER
+    constraint USERS_PK
+    primary key,
+    EMAIL    VARCHAR(40) not null,
+    LOGIN    VARCHAR(40) not null,
+    NAME     VARCHAR(20),
+    BIRTHDAY DATE
+    );
 
-create table IF NOT EXISTS rating
+CREATE TABLE IF NOT EXISTS MPA
 (
-    rating_id integer not null
-        constraint rating_pk
-            primary key,
-    code      varchar(5)
-);
+    MPA_ID INTEGER not null
+    constraint MPA_PK
+    primary key,
+    CODE    VARCHAR(5)
+    );
 
-create table IF NOT EXISTS films
+CREATE TABLE IF NOT EXISTS FILMS
 (
-    film_id      integer
-        constraint film_pk
-            primary key,
-    name         varchar(100) not null,
-    description  varchar(200) not null,
-    release_date date         not null,
-    duration     integer      not null,
-    rating_id    integer
-        constraint film_rating_rating_id_fk
-            references rating
-);
+    FILM_ID      INTEGER
+    constraint FILMS_PK
+    primary key,
+    NAME         VARCHAR(100) not null,
+    DESCRIPTION  VARCHAR(200) not null,
+    RELEASE_DATE DATE         not null,
+    DURATION     INTEGER      not null,
+    RATING_ID    INTEGER
+    constraint FILMS_MPA_MPA_ID_FK
+    references MPA
+    );
 
-create table IF NOT EXISTS films_users_likes
+CREATE TABLE IF NOT EXISTS FILMS_USERS_LIKES
 (
-    film_id integer not null
-        constraint films_users_likes_film_film_id_fk
-            references films,
-    user_id integer not null
-        constraint films_users_likes_user_user_id_fk
-            references users,
-    constraint films_likes_pk
-        primary key (film_id, user_id)
-);
+    FILM_ID INTEGER not null
+    constraint FILMS_USERS_LIKES_FILMS_FILM_ID_FK
+    references FILMS,
+    USER_ID INTEGER not null
+    constraint FILMS_USERS_LIKES_USERS_USER_ID_FK
+    references USERS,
+    constraint FILMS_USERS_LIKES_PK
+    primary key (FILM_ID, USER_ID)
+    );
 
-create table IF NOT EXISTS status
+CREATE TABLE IF NOT EXISTS STATUS
 (
-    status_id integer not null
-        constraint status_pk
-            primary key,
-    code      varchar(11)
-);
+    STATUS_ID INTEGER not null
+    constraint STATUS_PK
+    primary key,
+    CODE    VARCHAR(11)
+    );
 
-create table IF NOT EXISTS friends
+CREATE TABLE IF NOT EXISTS FRIENDS
 (
-    user_this  integer not null
-        constraint friends_user_user_id_fk
-            references users,
-    user_other integer not null
-        constraint friends_user_user_id_fk_2
-            references users,
-    status_id  integer
-        constraint friends_status_status_id_fk
-            references status,
-    constraint friends_pk
-        primary key (user_this, user_other)
-);
+    USER_THIS  INTEGER not null
+    constraint FRIENDS_USERS_USER_ID_FK
+    references USERS,
+    USER_OTHER INTEGER not null
+    constraint FRIENDS_USERS_USER_ID_FK_2
+    references USERS,
+    STATUS_ID  INTEGER
+    constraint FRIENDS_STATUS_STATUS_ID_FK
+    references STATUS,
+    constraint FRIENDS_PK
+    primary key (USER_THIS, USER_OTHER)
+    );
 
-create table IF NOT EXISTS genre
+CREATE TABLE IF NOT EXISTS GENRE
 (
-    genre_id integer     not null
-        constraint genre_pk
-            primary key,
-    name     varchar(15) not null
-);
+    GENRE_ID INTEGER     not null
+    constraint GENRE_PK
+    primary key,
+    NAME  VARCHAR(15) not null
+    );
 
-create table IF NOT EXISTS film_genre
+CREATE TABLE IF NOT EXISTS FILM_GENRE
 (
-    film_id  integer not null
-        constraint film_genre_film_film_id_fk
-            references films,
-    genre_id integer not null
-        constraint film_genre_genre_genre_id_fk
-            references genre,
-    constraint film_genre_pk
-        primary key (film_id, genre_id)
-);
+    FILM_ID  INTEGER not null
+    constraint FILM_GENRE_FILMS_FILM_ID_FK
+    references FILMS,
+    GENRE_ID INTEGER not null
+    constraint FILM_GENRE_GENRE_GENRE_ID_FK
+    references GENRE,
+    constraint FILM_GENRE_PK
+    primary key (FILM_ID, GENRE_ID)
+    );
