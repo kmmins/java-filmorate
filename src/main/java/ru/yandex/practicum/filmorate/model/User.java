@@ -26,7 +26,7 @@ public class User {
     private String name;
     @Past(message = "должно содержать прошедшую дату")
     private LocalDate birthday;
-    // переработать структуру хранения данных о друзьях пользовательей вероятно в hashmap
+    // переработать структуру хранения данных о друзьях пользователей вероятно в hashmap
     private HashMap<Integer, FriendStatus> friendsMap;
 
     public String getName() {

@@ -1,60 +1,57 @@
 # java-filmorate
-Repository for another one homework project (filmorate).
+Repository for homework project filmorate.
 
-filmorate database ER-diagram from [mermaid](https://github.com/kmmins/java-filmorate/blob/add-friends-likes/assets/ER_filmorate.md):
+filmorate database ER-diagram from mermaid:
 ```mermaid
 classDiagram
 direction BT
-class film {
-   varchar(100) name
-   varchar(200) description
-   date release_date
-   integer duration
-   integer rating_id
-   integer film_id
+class FILMS {
+   character varying(100) NAME
+   character varying(200) DESCRIPTION
+   date RELEASE_DATE
+   integer DURATION
+   integer RATING_ID
+   integer FILM_ID
 }
-class film_genre {
-   integer film_id
-   integer genre_id
+class FILMS_USERS_LIKES {
+   integer FILM_ID
+   integer USER_ID
 }
-class films_users_likes {
-   integer film_id
-   integer user_id
+class FILM_GENRE {
+   integer FILM_ID
+   integer GENRE_ID
 }
-class friends {
-   integer status_id
-   integer user_id1
-   integer user_id2
+class FRIENDS {
+   integer STATUS_ID
+   integer USER_THIS
+   integer USER_OTHER
 }
-class genre {
-   varchar(15) name
-   integer genre_id
+class GENRE {
+   character varying(15) NAME
+   integer GENRE_ID
 }
-class rating {
-   varchar(5) code
-   integer rating_id
+class RATING {
+   character varying(5) CODE
+   integer RATING_ID
 }
-class status {
-   varchar(11) code
-   integer status_id
+class STATUS {
+   character varying(11) CODE
+   integer STATUS_ID
 }
-class user {
-   varchar(40) email
-   varchar(40) login
-   varchar(20) name
-   date birthday
-   integer user_id
+class USERS {
+   character varying(40) EMAIL
+   character varying(40) LOGIN
+   character varying(20) NAME
+   date BIRTHDAY
+   integer USER_ID
 }
 
-film  -->  rating : rating_id
-film_genre  -->  film : film_id
-film_genre  -->  genre : genre_id
-films_users_likes  -->  film : film_id
-films_users_likes  -->  user : user_id
-friends  -->  status : status_id
-friends  -->  user : user_id2
-friends  -->  user : user_id1
+FILMS  -->  RATING : RATING_ID
+FILMS_USERS_LIKES  -->  FILMS : FILM_ID
+FILMS_USERS_LIKES  -->  USERS : USER_ID
+FILM_GENRE  -->  FILMS : FILM_ID
+FILM_GENRE  -->  GENRE : GENRE_ID
+FRIENDS  -->  STATUS : STATUS_ID
+FRIENDS  -->  USERS : USER_OTHER
+FRIENDS  -->  USERS : USER_THIS
 ```
-IDEA Ultimate auto-generated [schema](https://github.com/kmmins/java-filmorate/blob/add-friends-likes/assets/ER_filmorate.png) and [SQL script](https://github.com/kmmins/java-filmorate/blob/add-friends-likes/assets/script.sql).
-
-
