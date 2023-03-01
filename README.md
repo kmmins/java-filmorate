@@ -52,8 +52,8 @@ FILMS_USERS_LIKES  -->  USERS : USER_ID
 FILM_GENRE  -->  FILMS : FILM_ID
 FILM_GENRE  -->  GENRE : GENRE_ID
 FRIENDS  -->  STATUS : STATUS_ID
-FRIENDS  -->  USERS : USER_THIS
 FRIENDS  -->  USERS : USER_OTHER
+FRIENDS  -->  USERS : USER_THIS
 ```
 Also see IDEA Ultimate auto-generated ER-diagram [erd_filmorate.png](https://github.com/kmmins/java-filmorate/blob/add-database/src/main/resources/erd_filmorate%20.png).
 
