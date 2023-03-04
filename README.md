@@ -50,6 +50,6 @@ FILM_GENRE  -->  GENRE : GENRE_ID
 FRIENDS  -->  USERS : USER_OTHER
 FRIENDS  -->  USERS : USER_THIS
 ```
-Also see IDEA Ultimate auto-generated ER-diagram [erd_filmorate.png](https://github.com/kmmins/java-filmorate/blob/add-database/src/main/resources/erd_filmorate.png).
+Also see IDEA Ultimate auto-generated ER-diagram [erd_filmorate.png](https://github.com/kmmins/java-filmorate/blob/add-database/assets/erd_filmorate.png).
 
 SQL-script here: [schema.sql](https://github.com/kmmins/java-filmorate/blob/add-database/src/main/resources/schema.sql).
