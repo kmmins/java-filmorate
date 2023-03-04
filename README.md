@@ -1,7 +1,7 @@
 # java-filmorate
 Repository for homework project filmorate.
 
-filmorate database ER-diagram [mermaid](https://github.com/kmmins/java-filmorate/blob/add-database/src/main/resources/erd_filmorate.md):
+filmorate database ER-diagram [mermaid](https://github.com/kmmins/java-filmorate/blob/add-database/assets/erd_filmorate.md):
 ```mermaid
 classDiagram
 direction BT
@@ -47,9 +47,9 @@ FILMS_USERS_LIKES  -->  FILMS : FILM_ID
 FILMS_USERS_LIKES  -->  USERS : USER_ID
 FILM_GENRE  -->  FILMS : FILM_ID
 FILM_GENRE  -->  GENRE : GENRE_ID
-FRIENDS  -->  USERS : USER_THIS
 FRIENDS  -->  USERS : USER_OTHER
+FRIENDS  -->  USERS : USER_THIS
 ```
 Also see IDEA Ultimate auto-generated ER-diagram [erd_filmorate.png](https://github.com/kmmins/java-filmorate/blob/add-database/src/main/resources/erd_filmorate.png).
 
-SQL-script here: [schema.sql](https://github.com/kmmins/java-filmorate/blob/add-database/src/main/resources/schema.sql).
+SQL-script here: [schema.sql](https://github.com/kmmins/java-filmorate/blob/add-database/assets/erd_filmorate.png).
