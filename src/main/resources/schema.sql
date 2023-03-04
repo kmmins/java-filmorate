@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS USERS
 (
-    USER_ID  INTEGER
+    USER_ID  INTEGER auto_increment not null
     constraint USERS_PK
     primary key,
     EMAIL    VARCHAR(40) not null,
@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS USERS
 
 CREATE TABLE IF NOT EXISTS MPA
 (
-    MPA_ID INTEGER not null
+    MPA_ID INTEGER auto_increment not null
     constraint MPA_PK
     primary key,
     CODE    VARCHAR(5)
@@ -19,14 +19,14 @@ CREATE TABLE IF NOT EXISTS MPA
 
 CREATE TABLE IF NOT EXISTS FILMS
 (
-    FILM_ID      INTEGER
+    FILM_ID      INTEGER auto_increment not null
     constraint FILMS_PK
     primary key,
     NAME         VARCHAR(100) not null,
     DESCRIPTION  VARCHAR(200) not null,
     RELEASE_DATE DATE         not null,
     DURATION     INTEGER      not null,
-    RATING_ID    INTEGER
+    MPA_ID       INTEGER
     constraint FILMS_MPA_MPA_ID_FK
     references MPA
     );
@@ -43,14 +43,6 @@ CREATE TABLE IF NOT EXISTS FILMS_USERS_LIKES
     primary key (FILM_ID, USER_ID)
     );
 
-CREATE TABLE IF NOT EXISTS STATUS
-(
-    STATUS_ID INTEGER not null
-    constraint STATUS_PK
-    primary key,
-    CODE    VARCHAR(11)
-    );
-
 CREATE TABLE IF NOT EXISTS FRIENDS
 (
     USER_THIS  INTEGER not null
@@ -59,16 +51,14 @@ CREATE TABLE IF NOT EXISTS FRIENDS
     USER_OTHER INTEGER not null
     constraint FRIENDS_USERS_USER_ID_FK_2
     references USERS,
-    STATUS_ID  INTEGER
+    CONFIRMED  BOOLEAN,
     constraint FRIENDS_STATUS_STATUS_ID_FK
-    references STATUS,
-    constraint FRIENDS_PK
     primary key (USER_THIS, USER_OTHER)
     );
 
 CREATE TABLE IF NOT EXISTS GENRE
 (
-    GENRE_ID INTEGER     not null
+    GENRE_ID INTEGER auto_increment not null
     constraint GENRE_PK
     primary key,
     NAME  VARCHAR(15) not null

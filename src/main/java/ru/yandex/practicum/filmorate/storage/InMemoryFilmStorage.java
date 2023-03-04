@@ -27,7 +27,7 @@ public class InMemoryFilmStorage implements AbstractStorage<Film> {
                 film.getDescription(),
                 film.getReleaseDate(),
                 film.getGenre(),
-                film.getRating(),
+                film.getMpa(),
                 film.getDuration(),
                 film.getLikesSet()
         );

@@ -27,7 +27,7 @@ public class User {
     @Past(message = "должно содержать прошедшую дату")
     private LocalDate birthday;
     // переработать структуру хранения данных о друзьях пользователей вероятно в hashmap
-    private HashMap<Integer, FriendStatus> friendsMap;
+    private HashMap<Integer, Boolean> friendsMap;
 
     public String getName() {
         if (name == null || name.isEmpty()) {
@@ -37,7 +37,7 @@ public class User {
         }
     }
 
-    public HashMap<Integer, FriendStatus> getFriendsMap() {
+    public HashMap<Integer, Boolean> getFriendsMap() {
         if (friendsMap == null) {
             friendsMap = new HashMap<>();
         }

@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.model.FriendStatus;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.AbstractStorage;
 
@@ -15,7 +15,7 @@ public class UserService {
     private final AbstractStorage<User> userStorage;
 
     @Autowired
-    public UserService(AbstractStorage<User> userStorage) {
+    public UserService(@Qualifier("dbUserStorage") AbstractStorage<User> userStorage) {
         this.userStorage = userStorage;
     }
 
@@ -39,20 +39,25 @@ public class UserService {
         var userId = userStorage.getById(id);
         var userFriendId = userStorage.getById(friendId);
 
-        userId.getFriendsMap().put(friendId, FriendStatus.UNCONFIRMED);
+        userId.getFriendsMap().put(friendId, false);
         userStorage.update(userId);
-        userFriendId.getFriendsMap().put(id, FriendStatus.UNCONFIRMED);
-        userStorage.update(userFriendId);
+
+        if (Approve(id, friendId)) {
+            userId.getFriendsMap().put(friendId, true);
+            userStorage.update(userFriendId);
+        }
+    }
+
+    public boolean Approve(int id, int friendId) {
+    //?
+        return true;
     }
 
     public void delFriend(int id, int friendId) {
         var userId = userStorage.getById(id);
-        var userFriendId = userStorage.getById(friendId);
 
         userId.getFriendsMap().remove(friendId);
         userStorage.update(userId);
-        userFriendId.getFriendsMap().remove(id);
-        userStorage.update(userFriendId);
     }
 
     public List<User> getFriends(int id) {
@@ -60,7 +65,7 @@ public class UserService {
         var thisUserFriendsMap = thisUser.getFriendsMap();
 
         return thisUserFriendsMap.entrySet().stream()
-                .filter(e -> e.getValue().equals(FriendStatus.CONFIRMED))
+                .filter(e -> e.getValue().equals(true))
                 .map(e -> userStorage.getById(e.getKey()))
                 .collect(Collectors.toList());
     }
@@ -71,11 +76,11 @@ public class UserService {
         var otherUser = userStorage.getById(otherId);
 
         Set<Integer> thisUserFriendsSet = thisUser.getFriendsMap().entrySet().stream()
-                .filter(e -> e.getValue().equals(FriendStatus.CONFIRMED))
+                .filter(e -> e.getValue().equals(true))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
         Set<Integer> otherUserFriendsSet = otherUser.getFriendsMap().entrySet().stream()
-                .filter(e -> e.getValue().equals(FriendStatus.CONFIRMED))
+                .filter(e -> e.getValue().equals(true))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
 

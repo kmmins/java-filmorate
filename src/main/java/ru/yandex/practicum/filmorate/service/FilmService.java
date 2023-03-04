@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
@@ -20,7 +21,7 @@ public class FilmService {
     private final AbstractStorage<User> userStorage;
 
     @Autowired
-    public FilmService(AbstractStorage<Film> filmStorage, AbstractStorage<User> userStorage) {
+    public FilmService(@Qualifier("dbFilmStorage") AbstractStorage<Film> filmStorage, @Qualifier("dbUserStorage") AbstractStorage<User> userStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
     }

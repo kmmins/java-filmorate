@@ -17,7 +17,7 @@ class FILM_GENRE {
    integer GENRE_ID
 }
 class FRIENDS {
-   integer STATUS_ID
+   boolean CONFIRMED
    integer USER_THIS
    integer USER_OTHER
 }
@@ -28,10 +28,6 @@ class GENRE {
 class MPA {
    character varying(5) CODE
    integer MPA_ID
-}
-class STATUS {
-   character varying(11) CODE
-   integer STATUS_ID
 }
 class USERS {
    character varying(40) EMAIL
@@ -46,6 +42,5 @@ FILMS_USERS_LIKES  -->  FILMS : FILM_ID
 FILMS_USERS_LIKES  -->  USERS : USER_ID
 FILM_GENRE  -->  FILMS : FILM_ID
 FILM_GENRE  -->  GENRE : GENRE_ID
-FRIENDS  -->  STATUS : STATUS_ID
-FRIENDS  -->  USERS : USER_OTHER
-FRIENDS  -->  USERS : USER_THIS
+FRIENDS  -->  USERS : USER_THIS:USER_ID
+FRIENDS  -->  USERS : USER_OTHER:USER_ID

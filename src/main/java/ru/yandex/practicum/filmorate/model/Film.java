@@ -25,11 +25,18 @@ public class Film {
     @Size(max = 200, message = "размер должен находиться в диапазоне от 0 до 200")
     private String description;
     private LocalDate releaseDate;
-    private EnumSet<Genre> genre;
-    private Rating rating;
+    private Set<Integer> genre;
+    private Integer mpa;
     @Positive(message = "должно быть больше 0")
     private int duration;
     private Set<Integer> likesSet;
+
+    public Set<Integer> getGenre() {
+        if (genre == null) {
+            genre = new HashSet<>();
+        }
+        return genre;
+    }
     public Set<Integer> getLikesSet() {
         if (likesSet == null) {
             likesSet = new HashSet<>();
