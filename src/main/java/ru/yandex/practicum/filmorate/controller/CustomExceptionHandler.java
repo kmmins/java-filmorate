@@ -14,7 +14,7 @@ import java.util.Map;
 @RestControllerAdvice
 public class CustomExceptionHandler {
 
-    // 400 Bad Request («неправильный, некорректный запрос»)
+    //400 Bad Request («неправильный, некорректный запрос»)
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleIncorrectParameter(final IncorrectParameterException e) {

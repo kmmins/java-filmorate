@@ -1,7 +1,7 @@
 classDiagram
 direction BT
 class FILMS {
-   character varying(100) NAME
+   character varying(100) FILM_NAME
    character varying(200) DESCRIPTION
    date RELEASE_DATE
    integer DURATION
@@ -18,11 +18,11 @@ class FILM_GENRE {
 }
 class FRIENDS {
    boolean CONFIRMED
-   integer USER_THIS
-   integer USER_OTHER
+   integer USER_ID_THIS
+   integer USER_ID_OTHER
 }
 class GENRE {
-   character varying(15) NAME
+   character varying(15) GENRE_NAME
    integer GENRE_ID
 }
 class MPA {
@@ -32,7 +32,7 @@ class MPA {
 class USERS {
    character varying(40) EMAIL
    character varying(40) LOGIN
-   character varying(20) NAME
+   character varying(20) USER_NAME
    date BIRTHDAY
    integer USER_ID
 }
@@ -42,5 +42,5 @@ FILMS_USERS_LIKES  -->  FILMS : FILM_ID
 FILMS_USERS_LIKES  -->  USERS : USER_ID
 FILM_GENRE  -->  FILMS : FILM_ID
 FILM_GENRE  -->  GENRE : GENRE_ID
-FRIENDS  -->  USERS : USER_THIS:USER_ID
-FRIENDS  -->  USERS : USER_OTHER:USER_ID
+FRIENDS  -->  USERS : USER_ID_THIS:USER_ID
+FRIENDS  -->  USERS : USER_ID_OTHER:USER_ID

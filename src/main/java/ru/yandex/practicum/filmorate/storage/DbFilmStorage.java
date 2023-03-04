@@ -32,7 +32,7 @@ public class DbFilmStorage implements AbstractStorage<Film> {
                 .withTableName("FILMS")
                 .usingGeneratedKeyColumns("FILM_ID");
         int filmDbId = create.executeAndReturnKey(Map.of(
-                "NAME", film.getName(),
+                "FILM_NAME", film.getName(),
                 "DESCRIPTION", film.getDescription(),
                 "RELEASE_DATE", film.getReleaseDate(),
                 "MPA_ID", film.getMpa(),
@@ -47,7 +47,7 @@ public class DbFilmStorage implements AbstractStorage<Film> {
             jdbcTemplate.update("INSERT INTO FILMS_USERS_LIKES (FILM_ID, USER_ID) VALUES (?, ?)", filmDbId, userId);
         }
 
-        Film dbFilm = new Film(
+        return new Film(
                 filmDbId,
                 film.getName(),
                 film.getDescription(),
@@ -57,20 +57,18 @@ public class DbFilmStorage implements AbstractStorage<Film> {
                 film.getDuration(),
                 film.getLikesSet()
         );
-        return dbFilm;
     }
 
     //read//////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public List<Film> getAll() {
-        String sql = "SELECT FILM_ID, NAME, DESCRIPTION, RELEASE_DATE, MPA_ID, DURATION FROM FILMS";
-        List<Film> result = jdbcTemplate.query(sql, new FilmRowMapper());
-        return result;
+        String sql = "SELECT FILM_ID, FILM_NAME, DESCRIPTION, RELEASE_DATE, MPA_ID, DURATION FROM FILMS";
+        return jdbcTemplate.query(sql, new FilmRowMapper());
     }
 
     @Override
     public Film getById(int id) {
-        String sql = "SELECT FILM_ID, NAME, DESCRIPTION, RELEASE_DATE, MPA_ID, DURATION FROM FILMS WHERE FILM_ID = ?";
+        String sql = "SELECT FILM_ID, FILM_NAME, DESCRIPTION, RELEASE_DATE, MPA_ID, DURATION FROM FILMS WHERE FILM_ID = ?";
 
         List<Film> result = jdbcTemplate.query(sql, new FilmRowMapper(), id);
         if (result.isEmpty()) {
@@ -85,13 +83,13 @@ public class DbFilmStorage implements AbstractStorage<Film> {
         String check = "SELECT FILM_ID FROM FILMS WHERE FILM_ID = ?";
         SqlRowSet checkResult = jdbcTemplate.queryForRowSet(check, film.getId());
         if (checkResult.next()) {
-             var findId = checkResult.getInt("FILM_ID");
-             log.info("Фильм с id "+ findId +" найден, обновление.");
+            var foundId = checkResult.getInt("FILM_ID");
+            log.info("Фильм с id {} найден, обновление.", foundId);
         } else {
             throw new FilmNotFoundException("Не возможно обновить фильм. Не найден фильм c id: " + film.getId());
         }
 
-        jdbcTemplate.update("UPDATE FILMS SET NAME = ?, DESCRIPTION = ?, RELEASE_DATE = ?, MPA_ID = ?, DURATION = ? WHERE FILM_ID = ?",
+        jdbcTemplate.update("UPDATE FILMS SET FILM_NAME = ?, DESCRIPTION = ?, RELEASE_DATE = ?, MPA_ID = ?, DURATION = ? WHERE FILM_ID = ?",
                 film.getName(),
                 film.getDescription(),
                 film.getReleaseDate(),
@@ -118,21 +116,21 @@ public class DbFilmStorage implements AbstractStorage<Film> {
         @Override
         public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
             Film film = new Film(rs.getInt("FILM_ID"));
-            film.setName(rs.getString("NAME"));
+            film.setName(rs.getString("FILM_NAME"));
             film.setDescription(rs.getString("DESCRIPTION"));
             film.setReleaseDate(rs.getDate("RELEASE_DATE").toLocalDate());
             film.setMpa(rs.getInt("MPA_ID"));
             film.setDuration(rs.getInt("DURATION"));
 
             String sqlGenre = "SELECT GENRE_ID FROM FILM_GENRE WHERE FILM_ID = ?";
-            List<Integer> genreId = jdbcTemplate.query(sqlGenre, (rsG, rowNumG) ->
+            List<Integer> genreIdList = jdbcTemplate.query(sqlGenre, (rsG, rowNumG) ->
                     rsG.getInt("GENRE_ID"), film.getId());
-            film.setGenre(new HashSet<>(genreId));
+            film.setGenre(new HashSet<>(genreIdList));
 
             String sqlLikes = "SELECT USER_ID FROM FILMS_USERS_LIKES WHERE FILM_ID = ?";
-            List<Integer> likesId = jdbcTemplate.query(sqlLikes, (rsL, rowNumL) ->
+            List<Integer> likesIdList = jdbcTemplate.query(sqlLikes, (rsL, rowNumL) ->
                     rsL.getInt("USER_ID"), film.getId());
-            film.setLikesSet(new HashSet<>(likesId));
+            film.setLikesSet(new HashSet<>(likesIdList));
             return film;
         }
     }

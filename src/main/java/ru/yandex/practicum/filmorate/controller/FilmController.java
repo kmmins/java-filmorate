@@ -6,6 +6,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.CustomValidationException;
 import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.service.CustomValidator;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
@@ -16,7 +18,6 @@ import java.util.List;
 @Slf4j
 @Validated
 @RestController
-@RequestMapping("/films")
 public class FilmController {
 
     private final CustomValidator validator;
@@ -28,7 +29,7 @@ public class FilmController {
         this.filmService = filmService;
     }
 
-    @PostMapping
+    @PostMapping("/films")
     public Film addFilm(@Valid @RequestBody Film film) {
         try {
             validator.validateFilms(film);
@@ -41,7 +42,7 @@ public class FilmController {
         return addedFilm;
     }
 
-    @PutMapping
+    @PutMapping("/films")
     public Film updFilm(@Valid @RequestBody Film film) {
         try {
             validator.validateFilms(film);
@@ -54,7 +55,7 @@ public class FilmController {
         return updatedFilm;
     }
 
-    @GetMapping
+    @GetMapping("/films")
     public List<Film> getAllFilms() {
         var allFilms = filmService.getAllFilms();
         var size = allFilms.size();
@@ -62,7 +63,7 @@ public class FilmController {
         return allFilms;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/films/{id}")
     public Film getFilmById(@PathVariable Integer id) {
         if (id == null) {
             throw new IncorrectParameterException("Параметр id равен null.");
@@ -72,7 +73,7 @@ public class FilmController {
         return filmGetById;
     }
 
-    @PutMapping("/{id}/like/{userId}")
+    @PutMapping("/films/{id}/like/{userId}")
     public void addLike(@PathVariable Integer id, @PathVariable Integer userId) {
         if (id == null) {
             throw new IncorrectParameterException("Параметр id равен null.");
@@ -84,7 +85,7 @@ public class FilmController {
         log.debug("Обработка запроса PUT /films/{id}/like/{userId}. Обновлены данные фильма с id: {}.", id);
     }
 
-    @DeleteMapping("/{id}/like/{userId}")
+    @DeleteMapping("/films/{id}/like/{userId}")
     public void delLike(@PathVariable Integer id, @PathVariable Integer userId) {
         if (id == null) {
             throw new IncorrectParameterException("Параметр id равен null.");
@@ -96,10 +97,38 @@ public class FilmController {
         log.debug("Обработка запроса DELETE /films/{id}/like/{userId}. Обновлены данные фильма с id: {}.", id);
     }
 
-    @GetMapping("/popular")
+    @GetMapping("/films/popular")
     public List<Film> getTopFilms(@RequestParam(required = false) Integer count) {
         var topFilmList = filmService.getTopCountFilmsOrTop10Films(count);
         log.debug("Обработка запроса GET /films/popular?count={count}. Получены данные популярных фильмов.");
         return topFilmList;
+    }
+
+    @GetMapping("/genres")
+    public List<Genre> getAllGenre() {
+        var allGenre = filmService.getAllGenre();
+        log.debug("Обработка запроса GET /genres. Получены все имеющиеся жанры фильмов на данный момент.");
+        return allGenre;
+    }
+
+    @GetMapping("/genres/{id}")
+    public Genre getGenreById(@PathVariable Integer id) {
+        var genre = filmService.getGenreById(id);
+        log.debug("Обработка запроса GET /genres/{id}. Получен жанр фильма по указанному id: {}.", id);
+        return genre;
+    }
+
+    @GetMapping("/mpa")
+    public List<Mpa> getAllMpa() {
+        var allMpa = filmService.getAllMpa();
+        log.debug("Обработка запроса GET /mpa. Получены все имеющиеся на данный момент рейтинги Американской киноассоциации.");
+        return allMpa;
+    }
+
+    @GetMapping("/mpa/{id}")
+    public Mpa getMpaById(@PathVariable Integer id) {
+        var mpa = filmService.getMpaById(id);
+        log.debug("Обработка запроса GET /mpa/{id}. Получен рейтинг оценки содержания фильма по указанному id: {}.", id);
+        return mpa;
     }
 }

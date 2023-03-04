@@ -37,20 +37,18 @@ public class UserService {
 
     public void addFriend(int id, int friendId) {
         var userId = userStorage.getById(id);
-        var userFriendId = userStorage.getById(friendId);
 
         userId.getFriendsMap().put(friendId, false);
         userStorage.update(userId);
-
-        if (Approve(id, friendId)) {
-            userId.getFriendsMap().put(friendId, true);
-            userStorage.update(userFriendId);
-        }
     }
 
-    public boolean Approve(int id, int friendId) {
-    //?
-        return true;
+    public void approve(int id, int friendId) {
+        var userId = userStorage.getById(id);
+
+        if (userId.getFriendsMap().containsKey(friendId)) {
+            userId.getFriendsMap().put(friendId, true);
+            userStorage.update(userId);
+        }
     }
 
     public void delFriend(int id, int friendId) {

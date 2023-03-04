@@ -10,8 +10,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
 import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
 @RequiredArgsConstructor
@@ -26,7 +24,7 @@ public class User {
     private String name;
     @Past(message = "должно содержать прошедшую дату")
     private LocalDate birthday;
-    // переработать структуру хранения данных о друзьях пользователей вероятно в hashmap
+    // переработана структура хранения данных о друзьях пользователей
     private HashMap<Integer, Boolean> friendsMap;
 
     public String getName() {

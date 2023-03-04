@@ -34,18 +34,18 @@ public class DbUserStorage implements AbstractStorage<User> {
         int userDbId = create.executeAndReturnKey(Map.of(
                         "EMAIL", user.getEmail(),
                         "LOGIN", user.getLogin(),
-                        "NAME", user.getName(),
+                        "USER_NAME", user.getName(),
                         "BIRTHDAY", user.getBirthday()
                 )
         ).intValue();
 
         var thisUserFriendsMap = user.getFriendsMap();
         for (Map.Entry<Integer, Boolean> elm : thisUserFriendsMap.entrySet()) {
-            jdbcTemplate.update("INSERT INTO FRIENDS (CONFIRMED, USER_THIS, USER_OTHER) VALUES (?, ?, ?)",
+            jdbcTemplate.update("INSERT INTO FRIENDS (CONFIRMED, USER_ID_THIS, USER_ID_OTHER) VALUES (?, ?, ?)",
                     elm.getValue(), user.getId(), elm.getKey());
         }
 
-        User dbCreatedUser = new User(
+        return new User(
                 userDbId,
                 user.getEmail(),
                 user.getLogin(),
@@ -53,20 +53,18 @@ public class DbUserStorage implements AbstractStorage<User> {
                 user.getBirthday(),
                 user.getFriendsMap()
         );
-        return dbCreatedUser;
     }
 
     //read//////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public List<User> getAll() {
-        String sql = "SELECT USER_ID, EMAIL, LOGIN, NAME, BIRTHDAY FROM USERS";
-        List<User> result = jdbcTemplate.query(sql, new UserRowMapper());
-        return result;
+        String sql = "SELECT USER_ID, EMAIL, LOGIN, USER_NAME, BIRTHDAY FROM USERS";
+        return jdbcTemplate.query(sql, new UserRowMapper());
     }
 
     @Override
     public User getById(int id) {
-        String sql = "SELECT USER_ID, EMAIL, LOGIN, NAME, BIRTHDAY FROM USERS WHERE USER_ID = ?";
+        String sql = "SELECT USER_ID, EMAIL, LOGIN, USER_NAME, BIRTHDAY FROM USERS WHERE USER_ID = ?";
         List<User> result = jdbcTemplate.query(sql, new UserRowMapper());
         if (result.isEmpty()) {
             throw new UserNotFoundException("Не найден пользователь с id: " + id);
@@ -80,23 +78,23 @@ public class DbUserStorage implements AbstractStorage<User> {
         String check = "SELECT USER_ID FROM USERS WHERE USER_ID = ?";
         SqlRowSet checkResult = jdbcTemplate.queryForRowSet(check, user.getId());
         if (checkResult.next()) {
-            var findId = checkResult.getInt("USER_ID");
-            log.info("Пользователь с id "+ findId +" найден, обновление.");
+            var foundId = checkResult.getInt("USER_ID");
+            log.info("Пользователь с id {} найден, обновление.", foundId);
         } else {
             throw new UserNotFoundException("Не возможно обновить данные пользователя. Не найден пользователь с id: " + user.getId());
         }
 
-        jdbcTemplate.update("UPDATE USERS SET EMAIL = ?, LOGIN = ?, NAME = ?, BIRTHDAY = ? WHERE USER_ID = ?",
+        jdbcTemplate.update("UPDATE USERS SET EMAIL = ?, LOGIN = ?, USER_NAME = ?, BIRTHDAY = ? WHERE USER_ID = ?",
                 user.getEmail(),
                 user.getLogin(),
                 user.getName(),
                 user.getBirthday());
 
-        jdbcTemplate.update("DELETE FROM FRIENDS WHERE USER_THIS = ?", user.getId());
+        jdbcTemplate.update("DELETE FROM FRIENDS WHERE USER_ID_THIS = ?", user.getId());
 
         var thisUserFriendsMap = user.getFriendsMap();
         for (Map.Entry<Integer, Boolean> elm : thisUserFriendsMap.entrySet()) {
-            jdbcTemplate.update("INSERT INTO FRIENDS (CONFIRMED, USER_THIS, USER_OTHER) VALUES (?, ?, ?)",
+            jdbcTemplate.update("INSERT INTO FRIENDS (CONFIRMED, USER_ID_THIS, USER_ID_OTHER) VALUES (?, ?, ?)",
                     elm.getValue(), user.getId(), elm.getKey());
         }
         return user;
@@ -109,29 +107,20 @@ public class DbUserStorage implements AbstractStorage<User> {
             User user = new User(rs.getInt("USER_ID"));
             user.setEmail(rs.getString("EMAIL"));
             user.setLogin(rs.getString("LOGIN"));
-            user.setName(rs.getString("NAME"));
+            user.setName(rs.getString("USER_NAME"));
             user.setBirthday(rs.getDate("BIRTHDAY").toLocalDate());
 
-            /*Map<Integer, Boolean> userFriendsMap = jdbcTemplate.queryForObject(sqlF, (rsF, rowNumF) ->
-                    Map.of(rsF.getInt("USER_OTHER"), rsF.getBoolean("CONFIRMED")), user.getId());*/
-            /*List<Map<Integer, Boolean>> userFriendsMapList = jdbcTemplate.query(sqlF, (rsF, rowNumF) ->
-                    Map.of(rsF.getInt("USER_OTHER"), rsF.getBoolean("CONFIRMED")), user.getId());*/
-            /*List<Map<Integer, Boolean>> userFriendsMapList = new ArrayList<>();
-            SqlRowSet userFriendsMapRow = jdbcTemplate.queryForRowSet(sqlF, user.getId());
-                while (userFriendsMapRow.next()){
-                    Map.of(userFriendsMapRow.getInt("USER_OTHER"), userFriendsMapRow.getBoolean("CONFIRMED")));
-                }*/
-
-            HashMap<Integer, HashMap<Integer, Boolean>> allUsersFriendsMap = new HashMap<>();
-            String sqlFm = "SELECT USER_OTHER, CONFIRMED FROM FRIENDS WHERE USER_THIS = ?";
+            String sqlFm = "SELECT USER_ID_OTHER, CONFIRMED FROM FRIENDS WHERE USER_ID_THIS = ?";
+            HashMap<Integer, Boolean> friendsMap = new HashMap<>();
+            jdbcTemplate.query(sqlFm, (rsFm, rowNumFm) ->
+                    friendsMap.put(rsFm.getInt("USER_OTHER"), rsFm.getBoolean("CONFIRMED")), user.getId());
+            /* вариант через SqlRowSet
+            HashMap<Integer, Boolean> friendsMap = new HashMap<>();
             SqlRowSet fmRow = jdbcTemplate.queryForRowSet(sqlFm, user.getId());
             while (fmRow.next()) {
-                HashMap<Integer, Boolean> fm = new HashMap<>();
-                fm.put(fmRow.getInt("USER_OTHER"), fmRow.getBoolean("CONFIRMED"));
-                allUsersFriendsMap.put(user.getId(), fm);
-            }
-
-            user.setFriendsMap(allUsersFriendsMap.get(user.getId()));
+                friendsMap.put(fmRow.getInt("USER_OTHER"), fmRow.getBoolean("CONFIRMED"));
+            }*/
+            user.setFriendsMap(friendsMap);
 
             return user;
         }

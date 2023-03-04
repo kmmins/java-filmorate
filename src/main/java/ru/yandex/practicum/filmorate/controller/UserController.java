@@ -14,7 +14,6 @@ import java.util.List;
 @Slf4j
 @Validated
 @RestController
-@RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
@@ -24,21 +23,21 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping
+    @PostMapping("/users")
     public User addUser(@Valid @RequestBody User user) {
         var addedUser = userService.addUser(user);
         log.debug("Обработка запроса POST /users. Пользователь добавлен: {}.", addedUser);
         return addedUser;
     }
 
-    @PutMapping
+    @PutMapping("/users")
     public User updUser(@Valid @RequestBody User user) {
         var updatedUser = userService.updUser(user);
         log.debug("Обработка запроса PUT /users. Пользователь обновлен: {}.", updatedUser);
         return updatedUser;
     }
 
-    @GetMapping
+    @GetMapping("/users")
     public List<User> getAllUsers() {
         var allUsers = userService.getAllUsers();
         var size = allUsers.size();
@@ -46,7 +45,7 @@ public class UserController {
         return allUsers;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/users/{id}")
     public User getUserById(@PathVariable Integer id) {
         if (id == null) {
             throw new IncorrectParameterException("Параметр id равен null.");
@@ -56,7 +55,7 @@ public class UserController {
         return userGetById;
     }
 
-    @PutMapping("/{id}/friends/{friendId}")
+    @PutMapping("/users/{id}/friends/{friendId}")
     public void weAreFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
         if (id == null) {
             throw new IncorrectParameterException("Параметр id равен null.");
@@ -68,7 +67,7 @@ public class UserController {
         log.debug("Обработка запроса PUT /users/{id}/friends/{friendId}. Обновлены данные пользователей с id: {}, {}.", id, friendId);
     }
 
-    @DeleteMapping("/{id}/friends/{friendId}")
+    @DeleteMapping("/users/{id}/friends/{friendId}")
     public void noLongerFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
         if (id == null) {
             throw new IncorrectParameterException("Параметр id равен null.");
@@ -80,7 +79,7 @@ public class UserController {
         log.debug("Обработка запроса DELETE /users/{id}/friends/{friendId}. Обновлены данные пользователей с id: {}, {}.", id, friendId);
     }
 
-    @GetMapping("/{id}/friends")
+    @GetMapping("/users/{id}/friends")
     public List<User> getFriends(@PathVariable Integer id) {
         if (id == null) {
             throw new IncorrectParameterException("Параметр id равен null.");
@@ -90,7 +89,7 @@ public class UserController {
         return userFriendsList;
     }
 
-    @GetMapping("/{id}/friends/common/{otherId}")
+    @GetMapping("/users/{id}/friends/common/{otherId}")
     public List<User> getCommonFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
         if (id == null) {
             throw new IncorrectParameterException("Параметр id равен null.");
@@ -101,5 +100,17 @@ public class UserController {
         var usersCommonFriendsList = userService.getCommonFriends(id, otherId);
         log.debug("Обработка запроса GET /users/{id}/friends/common/{otherId}. Получены данные пользователя с id: {}.", id);
         return usersCommonFriendsList;
+    }
+
+    @PutMapping("/users/{id}/friends/{friendId}/approve")
+    public void approveFriendship(@PathVariable Integer id, @PathVariable Integer friendId) {
+        if (id == null) {
+            throw new IncorrectParameterException("Параметр id равен null.");
+        }
+        if (friendId == null) {
+            throw new IncorrectParameterException("Параметр friendId равен null.");
+        }
+        userService.approve(id, friendId);
+        log.debug("Обработка запроса PUT /{id}/friends/{friendId}/approve. У пользователя c id {} подтвержден друг с id {}.", id, friendId);
     }
 }
