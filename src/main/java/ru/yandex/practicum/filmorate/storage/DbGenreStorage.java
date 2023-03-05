@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.storage;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.sql.ResultSet;
@@ -30,7 +30,7 @@ public class DbGenreStorage implements AbstractStorage<Genre> {
         String sql = "SELECT GENRE_ID, GENRE_NAME FROM GENRE WHERE GENRE_ID = ?";
         List<Genre> result = jdbcTemplate.query(sql, new GenreRowMapper(), id);
         if (result.isEmpty()) {
-            throw new FilmNotFoundException("Нет такого жанра.");
+            throw new GenreNotFoundException("Нет такого жанра.");
         }
         return result.get(0);
     }

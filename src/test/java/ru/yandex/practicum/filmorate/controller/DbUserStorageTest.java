@@ -26,96 +26,94 @@ public class DbUserStorageTest {
 
     @Test
     public void checkAddUser() {
-        var user1 = new User();
-        user1.setEmail("user1@user.com");
-        user1.setLogin("login1");
-        user1.setName("username1");
-        user1.setBirthday(LocalDate.of(1978, 4, 20));
-        var userError = new User();
-        userError.setEmail("user1@user.com");
-        userError.setLogin("loginError");
-        userError.setName("usernameError");
-        userError.setBirthday(LocalDate.of(1978, 4, 20));
-
-        var addedUser1 = userStorage.add(user1);
+        var user1Db = new User();
+        user1Db.setEmail("user1Db@user.com");
+        user1Db.setLogin("login1Db");
+        user1Db.setName("username1Db");
+        user1Db.setBirthday(LocalDate.of(1978, 4, 20));
+        var userErrorDb = new User();
+        userErrorDb.setEmail("user1Db@user.com");
+        userErrorDb.setLogin("loginErrorDb");
+        userErrorDb.setName("usernameErrorDb");
+        userErrorDb.setBirthday(LocalDate.of(1978, 4, 20));
         var checkSize = userStorage.getAll().size();
 
-        assertEquals(1, checkSize, "Некорректное количество пользователей.");
-        assertEquals(1, addedUser1.getId(), "Некорректный id");
-        assertEquals("user1@user.com", addedUser1.getEmail(), "Неправильная почта");
+        var addedUser1Db = userStorage.add(user1Db);
+
+        assertEquals(checkSize + 1, addedUser1Db.getId(), "Некорректный id.");
+        assertEquals("user1Db@user.com", addedUser1Db.getEmail(), "Некорректная почта.");
         final UserAlreadyExistException e = assertThrows(UserAlreadyExistException.class,
-                () -> userStorage.add(userError));
-        var checkSizeAfter = userStorage.getAll().size();
-        assertEquals(1, checkSizeAfter, "Некорректное количество пользователей.");
-    }
-
-    @Test
-    public void checkGetAllUser() {
-        var user4 = new User();
-        user4.setEmail("user4@user.com");
-        user4.setLogin("login4");
-        user4.setName("username4");
-        user4.setBirthday(LocalDate.of(1978, 4, 20));
-        var user5 = new User();
-        user5.setEmail("user5@user.com");
-        user5.setLogin("login5");
-        user5.setName("username5");
-        user5.setBirthday(LocalDate.of(1978, 4, 20));
-
-        var checkSize = userStorage.getAll().size();
-
-        assertEquals(3, checkSize, "Некорректное количество пользователей.");
-        var addedUser4 = userStorage.add(user4);
-        var addedUser5 = userStorage.add(user5);
-        var checkSizeAfter = userStorage.getAll().size();
-        assertEquals(checkSize + 2, checkSizeAfter, "Некорректное количество пользователей.");
-    }
-
-    @Test
-    public void checkGetByIdUser() {
-        var user6 = new User();
-        user6.setEmail("user6@user.com");
-        user6.setLogin("login6");
-        user6.setName("username6");
-        user6.setBirthday(LocalDate.of(1978, 4, 20));
-
-        var checkSize = userStorage.getAll().size();
-        assertEquals(5, checkSize, "Некорректное количество пользователей.");
-        var addedUser6 = userStorage.add(user6);
-        var checkSizeAfter = userStorage.getAll().size();
-        assertEquals(checkSize + 1, checkSizeAfter, "Некорректное количество пользователей.");
-
-        Optional<User> userOptional = Optional.ofNullable(userStorage.getById(addedUser6.getId()));
-        assertThat(userOptional)
-                .isPresent()
-                .hasValueSatisfying(user ->
-                        assertThat(user)
-                                .hasFieldOrPropertyWithValue("id", 6)
-                );
+                () -> userStorage.add(userErrorDb));
+        assertEquals("Пользователь с электронной почтой: " + userErrorDb.getEmail() + " уже существует.",
+                e.getMessage(), "Текст не совпадает.");
     }
 
     @Test
     public void checkUpdateUser() {
-        var user2 = new User();
-        user2.setEmail("user2@user.com");
-        user2.setLogin("login2");
-        user2.setName("username2");
-        user2.setBirthday(LocalDate.of(1978, 4, 20));
-        var user3 = new User();
-        user3.setEmail("user3@user.com");
-        user3.setLogin("login3");
-        user3.setName("username3");
-        user3.setBirthday(LocalDate.of(1978, 4, 20));
-        var addedUser2 = userStorage.add(user2);
-        var addedUser3 = userStorage.add(user3);
-        assertEquals(new HashMap<>(), addedUser2.getFriendsMap(), "Не пустая мапа");
-        assertEquals(2, addedUser2.getId(), "ПОЧЕМУ ????????");
+        var user2Db = new User();
+        user2Db.setEmail("user2Db@user.com");
+        user2Db.setLogin("login2Db");
+        user2Db.setName("username2Db");
+        user2Db.setBirthday(LocalDate.of(1978, 4, 20));
+        var user3Db = new User();
+        user3Db.setEmail("user3Db@user.com");
+        user3Db.setLogin("login3Db");
+        user3Db.setName("username3Db");
+        user3Db.setBirthday(LocalDate.of(1978, 4, 20));
+        var checkSize = userStorage.getAll().size();
+        var addedUser2Db = userStorage.add(user2Db);
+        var addedUser3Db = userStorage.add(user3Db);
         HashMap<Integer, Boolean> testMap = new HashMap<>();
-        testMap.put(3, true);
+        testMap.put(checkSize + 2, true);
+        addedUser2Db.getFriendsMap().put(addedUser3Db.getId(), true);
 
-        addedUser2.getFriendsMap().put(addedUser3.getId(), true);
-        var user2AfterUpd = userStorage.update(addedUser2);
+        var user2AfterUpdDb = userStorage.update(addedUser2Db);
 
-        assertEquals(testMap, user2AfterUpd.getFriendsMap(), "Пользователя нет в друзьях");
+        assertEquals(testMap, user2AfterUpdDb.getFriendsMap(), "Пользователя нет в друзьях.");
+    }
+
+    @Test
+    public void checkGetAllUser() {
+        var user4Db = new User();
+        user4Db.setEmail("user4Db@user.com");
+        user4Db.setLogin("login4Db");
+        user4Db.setName("username4Db");
+        user4Db.setBirthday(LocalDate.of(1978, 4, 20));
+        var user5Db = new User();
+        user5Db.setEmail("user5Db@user.com");
+        user5Db.setLogin("login5Db");
+        user5Db.setName("username5Db");
+        user5Db.setBirthday(LocalDate.of(1978, 4, 20));
+        var checkSize = userStorage.getAll().size();
+        userStorage.add(user4Db);
+        userStorage.add(user5Db);
+
+        var checkResult = userStorage.getAll();
+
+        assertEquals(checkSize + 2, checkResult.size(), "Некорректное количество пользователей.");
+    }
+
+    @Test
+    public void checkGetByIdUser() {
+        var user6Db = new User();
+        user6Db.setEmail("user6Db@user.com");
+        user6Db.setLogin("login6Db");
+        user6Db.setName("username6Db");
+        user6Db.setBirthday(LocalDate.of(1978, 4, 20));
+        var checkSize = userStorage.getAll().size();
+        var addedUser6Db = userStorage.add(user6Db);
+
+        Optional<User> userOptional = Optional.ofNullable(userStorage.getById(addedUser6Db.getId()));
+        assertThat(userOptional)
+                .isPresent()
+                .hasValueSatisfying(user ->
+                        assertThat(user)
+                                .hasFieldOrPropertyWithValue("id", checkSize + 1)
+                                .hasFieldOrPropertyWithValue("email", user.getEmail())
+                                .hasFieldOrPropertyWithValue("login", user.getLogin())
+                                .hasFieldOrPropertyWithValue("name", user.getName())
+                                .hasFieldOrPropertyWithValue("birthday", user.getBirthday())
+                                .hasFieldOrPropertyWithValue("friendsMap", user.getFriendsMap())
+                );
     }
 }

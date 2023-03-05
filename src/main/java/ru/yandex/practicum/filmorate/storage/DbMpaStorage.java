@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.storage;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.sql.ResultSet;
@@ -30,7 +30,7 @@ public class DbMpaStorage implements AbstractStorage<Mpa> {
         String sql = "SELECT MPA_ID, CODE FROM MPA WHERE MPA_ID = ?";
         List<Mpa> result = jdbcTemplate.query(sql, new MpaRowMapper(), id);
         if (result.isEmpty()) {
-            throw new FilmNotFoundException("Нет такого рейтинга.");
+            throw new MpaNotFoundException("Нет такого рейтинга.");
         }
         return result.get(0);
     }

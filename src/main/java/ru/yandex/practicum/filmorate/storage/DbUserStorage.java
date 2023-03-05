@@ -26,7 +26,6 @@ public class DbUserStorage implements AbstractStorage<User> {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    //create////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public User add(User user) {
         String checkEmail = "SELECT COUNT(*) AS SAME_MAIL FROM USERS WHERE EMAIL = ?";
@@ -55,11 +54,9 @@ public class DbUserStorage implements AbstractStorage<User> {
             jdbcTemplate.update("INSERT INTO FRIENDS (CONFIRMED, USER_ID_THIS, USER_ID_OTHER) VALUES (?, ?, ?)",
                     elm.getValue(), user.getId(), elm.getKey());
         }
-
         return getById(userDbId);
     }
 
-    //read//////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public List<User> getAll() {
         String sql = "SELECT USER_ID, EMAIL, LOGIN, USER_NAME, BIRTHDAY FROM USERS";
@@ -77,7 +74,6 @@ public class DbUserStorage implements AbstractStorage<User> {
         return result.get(0);
     }
 
-    //update////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public User update(User user) {
         String check = "SELECT USER_ID FROM USERS WHERE USER_ID = ?";
@@ -107,7 +103,6 @@ public class DbUserStorage implements AbstractStorage<User> {
         return getById(user.getId());
     }
 
-    //RowMapper/////////////////////////////////////////////////////////////////////////////////////////////////////////
     private class UserRowMapper implements RowMapper<User> {
         @Override
         public User mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -119,16 +114,8 @@ public class DbUserStorage implements AbstractStorage<User> {
 
             String sqlFm = "SELECT USER_ID_OTHER, CONFIRMED FROM FRIENDS WHERE USER_ID_THIS = ?";
             HashMap<Integer, Boolean> friendsMap = new HashMap<>();
-
-            /*jdbcTemplate.query(sqlFm, (rsFm, rowNumFm) ->
-                    friendsMap.put(rsFm.getInt("USER_ID_OTHER"), rsFm.getBoolean("CONFIRMED")), user.getId());*/
-
-            // вариант через SqlRowSet
-
-            SqlRowSet fmRow = jdbcTemplate.queryForRowSet(sqlFm, user.getId());
-            while (fmRow.next()) {
-                friendsMap.put(fmRow.getInt("USER_ID_OTHER"), fmRow.getBoolean("CONFIRMED"));
-            }
+            jdbcTemplate.query(sqlFm, (rsFm, rowNumFm) ->
+                    friendsMap.put(rsFm.getInt("USER_ID_OTHER"), rsFm.getBoolean("CONFIRMED")), user.getId());
             user.setFriendsMap(friendsMap);
 
             return user;

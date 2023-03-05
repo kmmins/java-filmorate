@@ -36,7 +36,7 @@ public class CustomExceptionHandler {
     }
 
     //404 Not Found («не найдено»)
-    @ExceptionHandler({FilmNotFoundException.class, UserNotFoundException.class})
+    @ExceptionHandler({FilmNotFoundException.class, UserNotFoundException.class, MpaNotFoundException.class, GenreNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNotFound(final RuntimeException e) {
         log.error("При обработке запроса возникла ошибка: {}.", e.getMessage());
