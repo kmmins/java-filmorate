@@ -51,13 +51,15 @@ public class UserControllerTest {
         user5.setLogin("login5");
         user5.setName("");
         user5.setBirthday(LocalDate.of(1989, 4, 24));
+        var checkSize = userController.getAllUsers().size();
         userController.addUser(user5);
+
 
         final ValidationException e1 = assertThrows(ValidationException.class, () -> userController.addUser(user2));
         final ValidationException e2 = assertThrows(ValidationException.class, () -> userController.addUser(user3));
         final ValidationException e3 = assertThrows(ValidationException.class, () -> userController.addUser(user4));
         var getAll = userController.getAllUsers();
-        var checkUser5 = getAll.get(1);
+        var checkUser5 = getAll.get(checkSize);
 
         assertEquals("addUser.user.email: должно иметь формат адреса электронной почты", e1.getMessage());
         assertEquals("addUser.user.login: не должно быть пустым", e2.getMessage());

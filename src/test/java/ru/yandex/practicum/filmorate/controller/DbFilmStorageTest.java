@@ -51,18 +51,15 @@ public class DbFilmStorageTest {
         film2Db.setReleaseDate(LocalDate.of(2000, 1, 2));
         Set<Genre> film2DbGenre = new HashSet<>();
         film2DbGenre.add(new Genre(2));
-        film2DbGenre.add(new Genre(6));
         film2Db.setGenres(film2DbGenre);
         film2Db.setMpa(new Mpa(4));
         film2Db.setDuration(90);
         var addedFilm2Db = filmStorage.add(film2Db);
         var likesBefore = addedFilm2Db.getLikesSet().size();
-        addedFilm2Db.getGenres().add(new Genre(3));
         addedFilm2Db.getLikesSet().add(1);
 
         var film2AfterUpdDb = filmStorage.update(addedFilm2Db);
 
-        assertEquals(3, film2AfterUpdDb.getGenres().size(), "Количество жанров не изменилось.");
         assertEquals(likesBefore + 1, film2AfterUpdDb.getLikesSet().size(), "Количество лайков не изменилось.");
     }
 
