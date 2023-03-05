@@ -9,7 +9,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -24,17 +26,17 @@ public class Film {
     @Size(max = 200, message = "размер должен находиться в диапазоне от 0 до 200")
     private String description;
     private LocalDate releaseDate;
-    private Set<Integer> genre;
-    private Integer mpa;
+    private Set<Genre> genres;
+    private Mpa mpa;
     @Positive(message = "должно быть больше 0")
     private int duration;
     private Set<Integer> likesSet;
 
-    public Set<Integer> getGenre() {
-        if (genre == null) {
-            genre = new HashSet<>();
+    public Set<Genre> getGenres() {
+        if (genres == null) {
+            genres = new HashSet<>();
         }
-        return genre;
+        return genres;
     }
     public Set<Integer> getLikesSet() {
         if (likesSet == null) {

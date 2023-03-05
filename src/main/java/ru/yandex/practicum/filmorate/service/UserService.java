@@ -37,8 +37,9 @@ public class UserService {
 
     public void addFriend(int id, int friendId) {
         var userId = userStorage.getById(id);
+        var userFriendId = userStorage.getById(friendId);
 
-        userId.getFriendsMap().put(friendId, false);
+        userId.getFriendsMap().put(userFriendId.getId(), false);
         userStorage.update(userId);
     }
 
@@ -62,9 +63,9 @@ public class UserService {
         var thisUser = userStorage.getById(id);
         var thisUserFriendsMap = thisUser.getFriendsMap();
 
-        return thisUserFriendsMap.entrySet().stream()
-                .filter(e -> e.getValue().equals(true))
-                .map(e -> userStorage.getById(e.getKey()))
+        return thisUserFriendsMap.keySet().stream()
+                //.filter(e -> e.getValue().equals(true))
+                .map(userStorage::getById)
                 .collect(Collectors.toList());
     }
 
@@ -73,14 +74,10 @@ public class UserService {
         var thisUser = userStorage.getById(id);
         var otherUser = userStorage.getById(otherId);
 
-        Set<Integer> thisUserFriendsSet = thisUser.getFriendsMap().entrySet().stream()
-                .filter(e -> e.getValue().equals(true))
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toSet());
-        Set<Integer> otherUserFriendsSet = otherUser.getFriendsMap().entrySet().stream()
-                .filter(e -> e.getValue().equals(true))
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toSet());
+        //.filter(e -> e.getValue().equals(true))
+        Set<Integer> thisUserFriendsSet = new HashSet<>(thisUser.getFriendsMap().keySet());
+        //.filter(e -> e.getValue().equals(true))
+        Set<Integer> otherUserFriendsSet = new HashSet<>(otherUser.getFriendsMap().keySet());
 
         Set<Integer> commonFriendsSet = new HashSet<>(thisUserFriendsSet);
         commonFriendsSet.retainAll(otherUserFriendsSet);

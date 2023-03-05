@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.UserAlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -28,6 +29,16 @@ public class DbUserStorage implements AbstractStorage<User> {
     //create////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public User add(User user) {
+        String checkEmail = "SELECT COUNT(*) AS SAME_MAIL FROM USERS WHERE EMAIL = ?";
+        SqlRowSet checkResult = jdbcTemplate.queryForRowSet(checkEmail, user.getEmail());
+        if (checkResult.next()) {
+            var resultInt = checkResult.getInt("SAME_MAIL");
+            if (resultInt != 0) {
+                log.error("Ошибка! Пользователь с указанной почтой '{}' уже сущестует.", user.getEmail());
+                throw new UserAlreadyExistException("Пользователь с электронной почтой: " + user.getEmail() + " уже существует.");
+            }
+        }
+
         SimpleJdbcInsert create = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("USERS")
                 .usingGeneratedKeyColumns("USER_ID");
@@ -45,14 +56,7 @@ public class DbUserStorage implements AbstractStorage<User> {
                     elm.getValue(), user.getId(), elm.getKey());
         }
 
-        return new User(
-                userDbId,
-                user.getEmail(),
-                user.getLogin(),
-                user.getName(),
-                user.getBirthday(),
-                user.getFriendsMap()
-        );
+        return getById(userDbId);
     }
 
     //read//////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,8 +69,9 @@ public class DbUserStorage implements AbstractStorage<User> {
     @Override
     public User getById(int id) {
         String sql = "SELECT USER_ID, EMAIL, LOGIN, USER_NAME, BIRTHDAY FROM USERS WHERE USER_ID = ?";
-        List<User> result = jdbcTemplate.query(sql, new UserRowMapper());
+        List<User> result = jdbcTemplate.query(sql, new UserRowMapper(), id);
         if (result.isEmpty()) {
+            log.error("Ошибка! Не найден пользователь с id: {}.", id);
             throw new UserNotFoundException("Не найден пользователь с id: " + id);
         }
         return result.get(0);
@@ -81,6 +86,7 @@ public class DbUserStorage implements AbstractStorage<User> {
             var foundId = checkResult.getInt("USER_ID");
             log.info("Пользователь с id {} найден, обновление.", foundId);
         } else {
+            log.error("Ошибка! Не найден пользователь с id: {}.", user.getId());
             throw new UserNotFoundException("Не возможно обновить данные пользователя. Не найден пользователь с id: " + user.getId());
         }
 
@@ -88,7 +94,8 @@ public class DbUserStorage implements AbstractStorage<User> {
                 user.getEmail(),
                 user.getLogin(),
                 user.getName(),
-                user.getBirthday());
+                user.getBirthday(),
+                user.getId());
 
         jdbcTemplate.update("DELETE FROM FRIENDS WHERE USER_ID_THIS = ?", user.getId());
 
@@ -97,7 +104,7 @@ public class DbUserStorage implements AbstractStorage<User> {
             jdbcTemplate.update("INSERT INTO FRIENDS (CONFIRMED, USER_ID_THIS, USER_ID_OTHER) VALUES (?, ?, ?)",
                     elm.getValue(), user.getId(), elm.getKey());
         }
-        return user;
+        return getById(user.getId());
     }
 
     //RowMapper/////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -112,14 +119,16 @@ public class DbUserStorage implements AbstractStorage<User> {
 
             String sqlFm = "SELECT USER_ID_OTHER, CONFIRMED FROM FRIENDS WHERE USER_ID_THIS = ?";
             HashMap<Integer, Boolean> friendsMap = new HashMap<>();
-            jdbcTemplate.query(sqlFm, (rsFm, rowNumFm) ->
-                    friendsMap.put(rsFm.getInt("USER_OTHER"), rsFm.getBoolean("CONFIRMED")), user.getId());
-            /* вариант через SqlRowSet
-            HashMap<Integer, Boolean> friendsMap = new HashMap<>();
+
+            /*jdbcTemplate.query(sqlFm, (rsFm, rowNumFm) ->
+                    friendsMap.put(rsFm.getInt("USER_ID_OTHER"), rsFm.getBoolean("CONFIRMED")), user.getId());*/
+
+            // вариант через SqlRowSet
+
             SqlRowSet fmRow = jdbcTemplate.queryForRowSet(sqlFm, user.getId());
             while (fmRow.next()) {
-                friendsMap.put(fmRow.getInt("USER_OTHER"), fmRow.getBoolean("CONFIRMED"));
-            }*/
+                friendsMap.put(fmRow.getInt("USER_ID_OTHER"), fmRow.getBoolean("CONFIRMED"));
+            }
             user.setFriendsMap(friendsMap);
 
             return user;
