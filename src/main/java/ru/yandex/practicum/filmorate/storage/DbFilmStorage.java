@@ -63,7 +63,7 @@ public class DbFilmStorage implements AbstractStorage<Film> {
         List<Film> result = jdbcTemplate.query(sql, new FilmRowMapper(), id);
         if (result.isEmpty()) {
             log.error("Ошибка! Не найден фильм с id: {}.", id);
-            throw new FilmNotFoundException("Не найден фильм с id: " + id);
+            throw new FilmNotFoundException(String.format("Не найден фильм с id %d.", id));
         }
         return result.get(0);
     }
@@ -77,7 +77,7 @@ public class DbFilmStorage implements AbstractStorage<Film> {
             log.info("Фильм с id {} найден, обновление.", foundId);
         } else {
             log.error("Ошибка! Не найден фильм с id: {}.", film.getId());
-            throw new FilmNotFoundException("Не возможно обновить фильм. Не найден фильм c id: " + film.getId());
+            throw new FilmNotFoundException(String.format("Не возможно обновить фильм. Не найден фильм c id %d.", film.getId()));
         }
 
         jdbcTemplate.update("UPDATE FILMS SET FILM_NAME = ?, DESCRIPTION = ?, RELEASE_DATE = ?, MPA_ID = ?, DURATION = ? WHERE FILM_ID = ?",

@@ -34,7 +34,7 @@ public class DbUserStorage implements AbstractStorage<User> {
             var resultInt = checkResult.getInt("SAME_MAIL");
             if (resultInt != 0) {
                 log.error("Ошибка! Пользователь с указанной почтой '{}' уже сущестует.", user.getEmail());
-                throw new UserAlreadyExistException("Пользователь с электронной почтой: " + user.getEmail() + " уже существует.");
+                throw new UserAlreadyExistException(String.format("Пользователь с электронной почтой %s уже существует.", user.getEmail()));
             }
         }
 
@@ -69,7 +69,7 @@ public class DbUserStorage implements AbstractStorage<User> {
         List<User> result = jdbcTemplate.query(sql, new UserRowMapper(), id);
         if (result.isEmpty()) {
             log.error("Ошибка! Не найден пользователь с id: {}.", id);
-            throw new UserNotFoundException("Не найден пользователь с id: " + id);
+            throw new UserNotFoundException(String.format("Не найден пользователь с id %d", id));
         }
         return result.get(0);
     }
@@ -83,7 +83,7 @@ public class DbUserStorage implements AbstractStorage<User> {
             log.info("Пользователь с id {} найден, обновление.", foundId);
         } else {
             log.error("Ошибка! Не найден пользователь с id: {}.", user.getId());
-            throw new UserNotFoundException("Не возможно обновить данные пользователя. Не найден пользователь с id: " + user.getId());
+            throw new UserNotFoundException(String.format("Не возможно обновить данные. Не найден пользователь с id %d.", user.getId()));
         }
 
         jdbcTemplate.update("UPDATE USERS SET EMAIL = ?, LOGIN = ?, USER_NAME = ?, BIRTHDAY = ? WHERE USER_ID = ?",

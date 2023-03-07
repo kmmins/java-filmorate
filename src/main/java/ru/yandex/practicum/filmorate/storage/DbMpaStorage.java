@@ -30,7 +30,7 @@ public class DbMpaStorage implements AbstractStorage<Mpa> {
         String sql = "SELECT MPA_ID, CODE FROM MPA WHERE MPA_ID = ?";
         List<Mpa> result = jdbcTemplate.query(sql, new MpaRowMapper(), id);
         if (result.isEmpty()) {
-            throw new MpaNotFoundException("Нет такого рейтинга.");
+            throw new MpaNotFoundException(String.format("Отсутсвует рейтинг с id %d.", id));
         }
         return result.get(0);
     }

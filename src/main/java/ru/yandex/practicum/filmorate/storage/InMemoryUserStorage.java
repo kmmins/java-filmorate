@@ -34,7 +34,7 @@ public class InMemoryUserStorage implements AbstractStorage<User> {
     @Override
     public User add(User user) {
         if (containsEmail(user)) {
-            throw new UserAlreadyExistException("Пользователь с электронной почтой: " + user.getEmail() + " уже существует.");
+            throw new UserAlreadyExistException(String.format("Пользователь с электронной почтой %s уже существует.", user.getEmail()));
         }
         countUsers++;
         var createdUser = new User(
@@ -51,7 +51,7 @@ public class InMemoryUserStorage implements AbstractStorage<User> {
     @Override
     public User update(User user) {
         if (notContainsUser(user)) {
-            throw new UserNotFoundException("Не возможно обновить данные пользователя. Не найден пользователь с id: " + user.getId());
+            throw new UserNotFoundException(String.format("Не возможно обновить данные. Не найден пользователь с id %d.", user.getId()));
         }
         userBase.put(user.getId(), user);
         return user;
@@ -66,7 +66,7 @@ public class InMemoryUserStorage implements AbstractStorage<User> {
     public User getById(int id) {
         var result = userBase.get(id);
         if (result == null) {
-            throw new UserNotFoundException("Не найден пользователь с id: " + id);
+            throw new UserNotFoundException(String.format("Не найден пользователь с id %d.", id));
         }
         return result;
     }

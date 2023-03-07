@@ -30,7 +30,7 @@ public class DbGenreStorage implements AbstractStorage<Genre> {
         String sql = "SELECT GENRE_ID, GENRE_NAME FROM GENRE WHERE GENRE_ID = ?";
         List<Genre> result = jdbcTemplate.query(sql, new GenreRowMapper(), id);
         if (result.isEmpty()) {
-            throw new GenreNotFoundException("Нет такого жанра.");
+            throw new GenreNotFoundException(String.format("Отсутсвует жанр с id %d.", id));
         }
         return result.get(0);
     }

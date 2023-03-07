@@ -53,7 +53,7 @@ public class FilmService {
 
     public void addLike(int id, int userId) {
         if (userStorage.getById(userId) == null) {
-            throw new UserNotFoundException("Не найден пользователь с id: " + id);
+            throw new UserNotFoundException(String.format("Не найден пользователь с id %d.", id));
         }
         var film = filmStorage.getById(id);
 
@@ -63,7 +63,7 @@ public class FilmService {
 
     public void delLike(int id, int userId) {
         if (userStorage.getById(userId) == null) {
-            throw new UserNotFoundException("Не найден пользователь с id: " + id);
+            throw new UserNotFoundException(String.format("Не найден пользователь с id %d.", id));
         }
         var film = filmStorage.getById(id);
         film.getLikesSet().remove(userId);
