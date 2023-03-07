@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.UserAlreadyExistException;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.AbstractStorage;
 
@@ -21,7 +22,7 @@ public class UserService {
     }
 
     public User addUser(User user) {
-        Boolean check = getAllUsers()
+        boolean check = getAllUsers()
                 .stream()
                 .anyMatch(u -> Objects.equals(u.getEmail(), user.getEmail()));
         if (check) {
@@ -32,6 +33,8 @@ public class UserService {
     }
 
     public User updUser(User user) {
+        getUserById(user.getId());
+
         return userStorage.update(user);
     }
 
@@ -40,19 +43,24 @@ public class UserService {
     }
 
     public User getUserById(int id) {
+        var userById = userStorage.getById(id);
+        if (userById == null) {
+            throw new UserNotFoundException(String.format("Не найден пользователь с id %d", id));
+        }
+
         return userStorage.getById(id);
     }
 
     public void addFriend(int id, int friendId) {
-        var userId = userStorage.getById(id);
-        var userFriendId = userStorage.getById(friendId);
+        var userId = getUserById(id);
+        var userFriendId = getUserById(friendId);
 
         userId.getFriendsMap().put(userFriendId.getId(), false);
         userStorage.update(userId);
     }
 
     public void approve(int id, int friendId) {
-        var userId = userStorage.getById(id);
+        var userId = getUserById(id);
 
         if (userId.getFriendsMap().containsKey(friendId)) {
             userId.getFriendsMap().put(friendId, true);
@@ -61,25 +69,25 @@ public class UserService {
     }
 
     public void delFriend(int id, int friendId) {
-        var userId = userStorage.getById(id);
+        var userId = getUserById(id);
 
         userId.getFriendsMap().remove(friendId);
         userStorage.update(userId);
     }
 
     public List<User> getFriends(int id) {
-        var thisUser = userStorage.getById(id);
+        var thisUser = getUserById(id);
         var thisUserFriendsMap = thisUser.getFriendsMap();
 
         return thisUserFriendsMap.keySet().stream()
-                .map(userStorage::getById)
+                .map(this::getUserById)
                 .collect(Collectors.toList());
     }
 
     public List<User> getCommonFriends(int id, int otherId) {
         List<User> commonFriendsList = new ArrayList<>();
-        var thisUser = userStorage.getById(id);
-        var otherUser = userStorage.getById(otherId);
+        var thisUser = getUserById(id);
+        var otherUser = getUserById(otherId);
 
         Set<Integer> thisUserFriendsSet = new HashSet<>(thisUser.getFriendsMap().keySet());
         Set<Integer> otherUserFriendsSet = new HashSet<>(otherUser.getFriendsMap().keySet());
@@ -87,7 +95,7 @@ public class UserService {
         Set<Integer> commonFriendsSet = new HashSet<>(thisUserFriendsSet);
         commonFriendsSet.retainAll(otherUserFriendsSet);
 
-        commonFriendsSet.forEach(e -> commonFriendsList.add(userStorage.getById(e)));
+        commonFriendsSet.forEach(e -> commonFriendsList.add(getUserById(e)));
         return commonFriendsList;
     }
 }

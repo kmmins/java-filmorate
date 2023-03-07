@@ -1,22 +1,18 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.UserAlreadyExistException;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Slf4j
 @Component("dbUserStorage")
 public class DbUserStorage implements AbstractStorage<User> {
 
@@ -49,33 +45,40 @@ public class DbUserStorage implements AbstractStorage<User> {
 
     @Override
     public List<User> getAll() {
-        String sql = "SELECT USER_ID, EMAIL, LOGIN, USER_NAME, BIRTHDAY FROM USERS";
-        return jdbcTemplate.query(sql, new UserRowMapper());
+        String sql = "SELECT U.USER_ID," +
+                "EMAIL," +
+                "LOGIN," +
+                "USER_NAME," +
+                "BIRTHDAY," +
+                "F.CONFIRMED," +
+                "F.USER_ID_OTHER " +
+                "FROM USERS AS U LEFT OUTER JOIN FRIENDS AS F ON U.USER_ID = F.USER_ID_THIS";
+
+        UserRowMapper mapper = new UserRowMapper();
+        jdbcTemplate.query(sql, mapper);
+
+        return new ArrayList<>(mapper.getUm().values());
     }
 
     @Override
     public User getById(int id) {
-        String sql = "SELECT USER_ID, EMAIL, LOGIN, USER_NAME, BIRTHDAY FROM USERS WHERE USER_ID = ?";
-        List<User> result = jdbcTemplate.query(sql, new UserRowMapper(), id);
-        if (result.isEmpty()) {
-            log.error("Ошибка! Не найден пользователь с id: {}.", id);
-            throw new UserNotFoundException(String.format("Не найден пользователь с id %d", id));
-        }
-        return result.get(0);
+        String sql = "SELECT U.USER_ID," +
+                "EMAIL," +
+                "LOGIN," +
+                "USER_NAME," +
+                "BIRTHDAY," +
+                "F.CONFIRMED," +
+                "F.USER_ID_OTHER " +
+                "FROM USERS AS U LEFT OUTER JOIN FRIENDS AS F ON U.USER_ID = F.USER_ID_THIS WHERE U.USER_ID = ?";
+
+        UserRowMapper mapper = new UserRowMapper();
+        jdbcTemplate.query(sql, mapper, id);
+
+        return mapper.getUm().get(id);
     }
 
     @Override
     public User update(User user) {
-        String check = "SELECT USER_ID FROM USERS WHERE USER_ID = ?";
-        SqlRowSet checkResult = jdbcTemplate.queryForRowSet(check, user.getId());
-        if (checkResult.next()) {
-            var foundId = checkResult.getInt("USER_ID");
-            log.info("Пользователь с id {} найден, обновление.", foundId);
-        } else {
-            log.error("Ошибка! Не найден пользователь с id: {}.", user.getId());
-            throw new UserNotFoundException(String.format("Не возможно обновить данные. Не найден пользователь с id %d.", user.getId()));
-        }
-
         jdbcTemplate.update("UPDATE USERS SET EMAIL = ?, LOGIN = ?, USER_NAME = ?, BIRTHDAY = ? WHERE USER_ID = ?",
                 user.getEmail(),
                 user.getLogin(),
@@ -94,20 +97,31 @@ public class DbUserStorage implements AbstractStorage<User> {
     }
 
     private class UserRowMapper implements RowMapper<User> {
+        private final Map<Integer, User> um;
+        public UserRowMapper() {
+            um = new HashMap<>();
+        }
+        public Map<Integer, User> getUm() {
+            return um;
+        }
+
         @Override
         public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-            User user = new User(rs.getInt("USER_ID"));
+            int userID = rs.getInt("USER_ID");
+
+            if (!um.containsKey(userID)) {
+                um.put(userID, new User(userID));
+            }
+
+            var user = um.get(userID);
             user.setEmail(rs.getString("EMAIL"));
             user.setLogin(rs.getString("LOGIN"));
             user.setName(rs.getString("USER_NAME"));
             user.setBirthday(rs.getDate("BIRTHDAY").toLocalDate());
 
-            String sqlFm = "SELECT USER_ID_OTHER, CONFIRMED FROM FRIENDS WHERE USER_ID_THIS = ?";
-            HashMap<Integer, Boolean> friendsMap = new HashMap<>();
-            jdbcTemplate.query(sqlFm, (rsFm, rowNumFm) ->
-                    friendsMap.put(rsFm.getInt("USER_ID_OTHER"), rsFm.getBoolean("CONFIRMED")), user.getId());
-            user.setFriendsMap(friendsMap);
-
+            if (rs.getObject("USER_ID_OTHER") != null) {
+                user.getFriendsMap().put(rs.getInt("USER_ID_OTHER"), rs.getBoolean("CONFIRMED"));
+            }
             return user;
         }
     }

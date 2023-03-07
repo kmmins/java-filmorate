@@ -115,9 +115,11 @@ public class DbFilmStorage implements AbstractStorage<Film> {
     private class FilmRowMapper implements RowMapper<Film> {
 
         private final Map<Integer, Film> hm;
+
         public FilmRowMapper() {
             hm = new HashMap<>();
         }
+
         public Map<Integer, Film> getHm() {
             return hm;
         }
@@ -129,23 +131,23 @@ public class DbFilmStorage implements AbstractStorage<Film> {
             if (!hm.containsKey(filmId)) {
                 hm.put(filmId, new Film(filmId));
             }
-                var film = hm.get(filmId);
-                film.setName(rs.getString("FILM_NAME"));
-                film.setDescription(rs.getString("DESCRIPTION"));
-                film.setReleaseDate(rs.getDate("RELEASE_DATE").toLocalDate());
-                Mpa mpa = new Mpa(rs.getInt("MPA_ID"), rs.getString("CODE"));
-                film.setMpa(mpa);
-                film.setDuration(rs.getInt("DURATION"));
+            var film = hm.get(filmId);
+            film.setName(rs.getString("FILM_NAME"));
+            film.setDescription(rs.getString("DESCRIPTION"));
+            film.setReleaseDate(rs.getDate("RELEASE_DATE").toLocalDate());
+            Mpa mpa = new Mpa(rs.getInt("MPA_ID"), rs.getString("CODE"));
+            film.setMpa(mpa);
+            film.setDuration(rs.getInt("DURATION"));
 
-                if (rs.getObject("GENRE_ID") != null) {
-                    Genre genre = new Genre(rs.getInt("GENRE_ID"), rs.getString("GENRE_NAME"));
-                    film.getGenres().add(genre);
-                }
+            if (rs.getObject("GENRE_ID") != null) {
+                Genre genre = new Genre(rs.getInt("GENRE_ID"), rs.getString("GENRE_NAME"));
+                film.getGenres().add(genre);
+            }
 
-                if (rs.getObject("USER_ID") != null) {
-                    Integer like = rs.getInt("USER_ID");
-                    film.getLikesSet().add(like);
-                }
+            if (rs.getObject("USER_ID") != null) {
+                Integer like = rs.getInt("USER_ID");
+                film.getLikesSet().add(like);
+            }
             return film;
         }
     }
