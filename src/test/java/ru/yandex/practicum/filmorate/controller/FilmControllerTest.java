@@ -121,7 +121,7 @@ public class FilmControllerTest {
                 () -> filmController.updFilm(film2upd3));
         final ValidationException e4 = assertThrows(ValidationException.class, () -> filmController.updFilm(film2upd4));
 
-        assertEquals("Не возможно обновить фильм. Не найден фильм c id: 100500", e0.getMessage());
+        assertEquals("Не найден фильм с id 100500.", e0.getMessage());
         assertEquals("updFilm.film.name: не должно быть пустым", e1.getMessage());
         assertEquals("updFilm.film.description: размер должен находиться в диапазоне от 0 до 200", e2.getMessage());
         assertEquals("Дата релиза фильма не может быть раньше 28 декабря 1895 года.", e3.getMessage());

@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -40,6 +41,8 @@ public class FilmService {
     }
 
     public Film updFilm(Film film) {
+        getFilmById(film.getId());
+
         return filmStorage.update(film);
     }
 
@@ -48,7 +51,11 @@ public class FilmService {
     }
 
     public Film getFilmById(int id) {
-        return filmStorage.getById(id);
+        var filmById = filmStorage.getById(id);
+        if (filmById == null) {
+            throw new FilmNotFoundException(String.format("Не найден фильм с id %d.", id));
+        }
+        return filmById;
     }
 
     public void addLike(int id, int userId) {

@@ -28,16 +28,6 @@ public class DbUserStorage implements AbstractStorage<User> {
 
     @Override
     public User add(User user) {
-        String checkEmail = "SELECT COUNT(*) AS SAME_MAIL FROM USERS WHERE EMAIL = ?";
-        SqlRowSet checkResult = jdbcTemplate.queryForRowSet(checkEmail, user.getEmail());
-        if (checkResult.next()) {
-            var resultInt = checkResult.getInt("SAME_MAIL");
-            if (resultInt != 0) {
-                log.error("Ошибка! Пользователь с указанной почтой '{}' уже сущестует.", user.getEmail());
-                throw new UserAlreadyExistException(String.format("Пользователь с электронной почтой %s уже существует.", user.getEmail()));
-            }
-        }
-
         SimpleJdbcInsert create = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("USERS")
                 .usingGeneratedKeyColumns("USER_ID");

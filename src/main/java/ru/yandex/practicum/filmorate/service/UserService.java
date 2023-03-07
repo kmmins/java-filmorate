@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.UserAlreadyExistException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.AbstractStorage;
 
@@ -20,6 +21,13 @@ public class UserService {
     }
 
     public User addUser(User user) {
+        Boolean check = getAllUsers()
+                .stream()
+                .anyMatch(u -> Objects.equals(u.getEmail(), user.getEmail()));
+        if (check) {
+            throw new UserAlreadyExistException(String.format("Пользователь с электронной почтой %s уже существует.", user.getEmail()));
+        }
+
         return userStorage.add(user);
     }
 

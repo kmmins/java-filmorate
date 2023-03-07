@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.exception.UserAlreadyExistException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.DbUserStorage;
 
@@ -15,7 +14,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -31,21 +29,12 @@ public class DbUserStorageTest {
         user1Db.setLogin("login1Db");
         user1Db.setName("username1Db");
         user1Db.setBirthday(LocalDate.of(1978, 4, 20));
-        var userErrorDb = new User();
-        userErrorDb.setEmail("user1Db@user.com");
-        userErrorDb.setLogin("loginErrorDb");
-        userErrorDb.setName("usernameErrorDb");
-        userErrorDb.setBirthday(LocalDate.of(1978, 4, 20));
         var checkSize = userStorage.getAll().size();
 
         var addedUser1Db = userStorage.add(user1Db);
 
         assertEquals(checkSize + 1, addedUser1Db.getId(), "Некорректный id.");
         assertEquals("user1Db@user.com", addedUser1Db.getEmail(), "Некорректная почта.");
-        final UserAlreadyExistException e = assertThrows(UserAlreadyExistException.class,
-                () -> userStorage.add(userErrorDb));
-        assertEquals("Пользователь с электронной почтой: " + userErrorDb.getEmail() + " уже существует.",
-                e.getMessage(), "Текст не совпадает.");
     }
 
     @Test
