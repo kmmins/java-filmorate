@@ -13,7 +13,6 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 import java.util.List;
 
 @Slf4j
-@Validated
 @RestController
 @RequestMapping("/mpa")
 public class MpaController {
