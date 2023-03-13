@@ -21,7 +21,16 @@ public class InMemoryFilmStorage implements AbstractStorage<Film> {
     @Override
     public Film add(Film film) {
         countFilms++;
-        var createdFilm = new Film(countFilms, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getLikesSet());
+        var createdFilm = new Film(
+                countFilms,
+                film.getName(),
+                film.getDescription(),
+                film.getReleaseDate(),
+                film.getGenres(),
+                film.getMpa(),
+                film.getDuration(),
+                film.getLikesSet()
+        );
         filmsDatabase.put(countFilms, createdFilm);
         return createdFilm;
     }
@@ -29,7 +38,7 @@ public class InMemoryFilmStorage implements AbstractStorage<Film> {
     @Override
     public Film update(Film film) {
         if (notContainsFilm(film.getId())) {
-            throw new FilmNotFoundException("Не возможно обновить фильм. Не найден фильм c id: " + film.getId());
+            throw new FilmNotFoundException(String.format("Не возможно обновить фильм. Не найден фильм c id %d.", film.getId()));
         }
         filmsDatabase.put(film.getId(), film);
         return film;
@@ -44,7 +53,7 @@ public class InMemoryFilmStorage implements AbstractStorage<Film> {
     public Film getById(int id) {
         var result = filmsDatabase.get(id);
         if (result == null) {
-            throw new FilmNotFoundException("Не найден фильм с id: " + id);
+            throw new FilmNotFoundException(String.format("Не найден фильм с id %d.", id));
         }
         return result;
     }

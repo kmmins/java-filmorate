@@ -9,8 +9,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 @Data
 @RequiredArgsConstructor
@@ -25,7 +25,7 @@ public class User {
     private String name;
     @Past(message = "должно содержать прошедшую дату")
     private LocalDate birthday;
-    private Set<Integer> friendsSet;
+    private Map<Integer, Boolean> friendsMap;
 
     public String getName() {
         if (name == null || name.isEmpty()) {
@@ -35,10 +35,10 @@ public class User {
         }
     }
 
-    public Set<Integer> getFriendsSet() {
-        if (friendsSet == null) {
-            friendsSet = new HashSet<>();
+    public Map<Integer, Boolean> getFriendsMap() {
+        if (friendsMap == null) {
+            friendsMap = new HashMap<>();
         }
-        return friendsSet;
+        return friendsMap;
     }
 }

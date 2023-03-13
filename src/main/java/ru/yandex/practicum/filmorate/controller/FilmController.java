@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.CustomValidationException;
-import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.service.CustomValidator;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
@@ -64,9 +63,6 @@ public class FilmController {
 
     @GetMapping("/{id}")
     public Film getFilmById(@PathVariable Integer id) {
-        if (id == null) {
-            throw new IncorrectParameterException("Параметр id равен null.");
-        }
         var filmGetById = filmService.getFilmById(id);
         log.debug("Обработка запроса GET /films/{id}. Получены данные фильма: {}.", filmGetById);
         return filmGetById;
@@ -74,24 +70,12 @@ public class FilmController {
 
     @PutMapping("/{id}/like/{userId}")
     public void addLike(@PathVariable Integer id, @PathVariable Integer userId) {
-        if (id == null) {
-            throw new IncorrectParameterException("Параметр id равен null.");
-        }
-        if (userId == null) {
-            throw new IncorrectParameterException("Параметр userId равен null.");
-        }
         filmService.addLike(id, userId);
         log.debug("Обработка запроса PUT /films/{id}/like/{userId}. Обновлены данные фильма с id: {}.", id);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public void delLike(@PathVariable Integer id, @PathVariable Integer userId) {
-        if (id == null) {
-            throw new IncorrectParameterException("Параметр id равен null.");
-        }
-        if (userId == null) {
-            throw new IncorrectParameterException("Параметр userId равен null.");
-        }
         filmService.delLike(id, userId);
         log.debug("Обработка запроса DELETE /films/{id}/like/{userId}. Обновлены данные фильма с id: {}.", id);
     }

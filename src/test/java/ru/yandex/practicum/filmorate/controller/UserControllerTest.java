@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.exception.*;
 import ru.yandex.practicum.filmorate.model.User;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@AutoConfigureTestDatabase
 public class UserControllerTest {
 
     private final UserController userController;
@@ -49,13 +51,15 @@ public class UserControllerTest {
         user5.setLogin("login5");
         user5.setName("");
         user5.setBirthday(LocalDate.of(1989, 4, 24));
+        var checkSize = userController.getAllUsers().size();
         userController.addUser(user5);
+
 
         final ValidationException e1 = assertThrows(ValidationException.class, () -> userController.addUser(user2));
         final ValidationException e2 = assertThrows(ValidationException.class, () -> userController.addUser(user3));
         final ValidationException e3 = assertThrows(ValidationException.class, () -> userController.addUser(user4));
         var getAll = userController.getAllUsers();
-        var checkUser5 = getAll.get(1);
+        var checkUser5 = getAll.get(checkSize);
 
         assertEquals("addUser.user.email: должно иметь формат адреса электронной почты", e1.getMessage());
         assertEquals("addUser.user.login: не должно быть пустым", e2.getMessage());
@@ -99,7 +103,7 @@ public class UserControllerTest {
         final ValidationException e2 = assertThrows(ValidationException.class, () -> userController.updUser(user2upd2));
         final ValidationException e3 = assertThrows(ValidationException.class, () -> userController.updUser(user2upd3));
 
-        assertEquals("Не возможно обновить данные пользователя. Не найден пользователь с id: 100500",
+        assertEquals("Не найден пользователь с id 100500",
                 e0.getMessage());
         assertEquals("updUser.user.email: должно иметь формат адреса электронной почты", e1.getMessage());
         assertEquals("updUser.user.login: не должно быть пустым", e2.getMessage());

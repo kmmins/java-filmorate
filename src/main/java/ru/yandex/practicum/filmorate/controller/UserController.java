@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -48,9 +47,6 @@ public class UserController {
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable Integer id) {
-        if (id == null) {
-            throw new IncorrectParameterException("Параметр id равен null.");
-        }
         var userGetById = userService.getUserById(id);
         log.debug("Обработка запроса GET /users/{id}. Получены данные пользователя: {}.", userGetById);
         return userGetById;
@@ -58,33 +54,18 @@ public class UserController {
 
     @PutMapping("/{id}/friends/{friendId}")
     public void weAreFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
-        if (id == null) {
-            throw new IncorrectParameterException("Параметр id равен null.");
-        }
-        if (friendId == null) {
-            throw new IncorrectParameterException("Параметр friendId равен null.");
-        }
         userService.addFriend(id, friendId);
         log.debug("Обработка запроса PUT /users/{id}/friends/{friendId}. Обновлены данные пользователей с id: {}, {}.", id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
     public void noLongerFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
-        if (id == null) {
-            throw new IncorrectParameterException("Параметр id равен null.");
-        }
-        if (friendId == null) {
-            throw new IncorrectParameterException("Параметр friendId равен null.");
-        }
         userService.delFriend(id, friendId);
         log.debug("Обработка запроса DELETE /users/{id}/friends/{friendId}. Обновлены данные пользователей с id: {}, {}.", id, friendId);
     }
 
     @GetMapping("/{id}/friends")
     public List<User> getFriends(@PathVariable Integer id) {
-        if (id == null) {
-            throw new IncorrectParameterException("Параметр id равен null.");
-        }
         var userFriendsList = userService.getFriends(id);
         log.debug("Обработка запроса GET /users/{id}/friends. Получены данные пользователя с id: {}.", id);
         return userFriendsList;
@@ -92,14 +73,14 @@ public class UserController {
 
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> getCommonFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
-        if (id == null) {
-            throw new IncorrectParameterException("Параметр id равен null.");
-        }
-        if (otherId == null) {
-            throw new IncorrectParameterException("Параметр otherId равен null.");
-        }
         var usersCommonFriendsList = userService.getCommonFriends(id, otherId);
         log.debug("Обработка запроса GET /users/{id}/friends/common/{otherId}. Получены данные пользователя с id: {}.", id);
         return usersCommonFriendsList;
+    }
+
+    @PutMapping("/{id}/friends/{friendId}/approve")
+    public void approveFriendship(@PathVariable Integer id, @PathVariable Integer friendId) {
+        userService.approve(id, friendId);
+        log.debug("Обработка запроса PUT /{id}/friends/{friendId}/approve. У пользователя c id {} подтвержден друг с id {}.", id, friendId);
     }
 }
